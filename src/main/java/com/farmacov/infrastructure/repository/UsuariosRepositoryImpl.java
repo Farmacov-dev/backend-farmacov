@@ -2,6 +2,7 @@ package com.farmacov.infrastructure.repository;
 
 import com.farmacov.domain.repository.UsuariosRepository;
 import com.farmacov.domain.models.Usuarios;
+import com.farmacov.infrastructure.entities.RolesEntity;
 import com.farmacov.infrastructure.entities.UsuariosEntity;
 import com.farmacov.infrastructure.mapper.UsuariosMapper;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
@@ -48,8 +49,9 @@ public class UsuariosRepositoryImpl implements UsuariosRepository, PanacheReposi
     @Override
     public Usuarios saveUsuario(Usuarios usuario) {
         UsuariosEntity entity = UsuariosMapper.toEntity(usuario); // convierte modelo a entidad
+        RolesEntity rol = getEntityManager().getReference(RolesEntity.class, usuario.getRol().getId()); // obtiene referencia del rol existente en la db sin traerlo completo
+        entity.setRol(rol); // asigna el rol que hibernate ya conoce
         persist(entity); // panache guarda en la db
-        return UsuariosMapper.toDomain(entity);
-
+        return UsuariosMapper.toDomain(entity); // devuelve el usuario guardado como modelo
     }
 }
