@@ -5,8 +5,8 @@ import com.farmacov.infrastructure.entities.RolesEntity;
 
 public class RolesMapper {
 
-    // Convierte entidad a modelo de dominio.
-    // Se usa cuando la DB devuelve un registro y necesitas pasarlo a la lógica de negocio.
+    // conviertir entidad a modelo
+    // para cuando la db devuelve un registro y necesite pasarlo a la logica de negocio
     public static Roles toDomain(RolesEntity entity) {
         Roles roles = new Roles();
         roles.setId(entity.getId());
@@ -15,8 +15,8 @@ public class RolesMapper {
         return roles;
     }
 
-    // Convierte modelo de dominio a entidad.
-    // Se usa cuando tienes datos listos en la lógica de negocio y los quieres persistir en la DB.
+    // convierte modelo a entidad
+    // para  cuando hay datos listos en la logica de negocio y los quiero persistir en la db ;)
     public static RolesEntity toEntity(Roles roles) {
         RolesEntity entity = new RolesEntity();
         entity.setId(roles.getId());

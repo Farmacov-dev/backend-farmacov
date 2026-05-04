@@ -5,8 +5,7 @@ import com.farmacov.infrastructure.entities.UsuariosEntity;
 
 public class UsuariosMapper {
 
-    // Convierte entidad a modelo de dominio.
-    // Se usa cuando la DB devuelve un registro y necesitas pasarlo a la lógica de negocio.
+
     public static Usuarios toDomain(UsuariosEntity entity) {
         Usuarios usuario = new Usuarios();
         usuario.setId(entity.getId());
@@ -22,8 +21,6 @@ public class UsuariosMapper {
         return usuario;
     }
 
-    // Convierte modelo de dominio a entidad.
-    // Se usa cuando tienes datos listos en la lógica de negocio y los quieres persistir en la DB.
     public static UsuariosEntity toEntity(Usuarios usuario) {
         UsuariosEntity entity = new UsuariosEntity();
         entity.setId(usuario.getId());
