@@ -6,6 +6,7 @@ import com.farmacov.infrastructure.entities.UsuariosEntity;
 import com.farmacov.infrastructure.mapper.UsuariosMapper;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +44,7 @@ public class UsuariosRepositoryImpl implements UsuariosRepository, PanacheReposi
                 .map(UsuariosMapper::toDomain);
     }
 
+    @Transactional
     @Override
     public Usuarios saveUsuario(Usuarios usuario) {
         UsuariosEntity entity = UsuariosMapper.toEntity(usuario); // convierte modelo a entidad
