@@ -9,12 +9,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-//H
 @Entity
 @Table(name = "usuarios")
 public class UsuariosEntity {
+
     @Id
+    @JdbcTypeCode(SqlTypes.CHAR) // guarda el UUID como texto legible en la db
+    @Column(length = 36)
     private UUID id;
 
     @Column(name = "firebase_uuid", nullable = false, unique = true, length = 128)
