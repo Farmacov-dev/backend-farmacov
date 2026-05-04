@@ -6,6 +6,7 @@ import com.farmacov.infrastructure.entities.RolesEntity;
 import com.farmacov.infrastructure.mapper.RolesMapper;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ public class RolesRepositoryImpl implements RolesRepository, PanacheRepositoryBa
                 .map(RolesMapper::toDomain); // convierte cada enditad a modelo si es que  existe
     }
 
+    @Transactional
     @Override
     public Roles saveRole(Roles rol) {
         RolesEntity entity = RolesMapper.toEntity(rol); // convierte modelo a entidad
