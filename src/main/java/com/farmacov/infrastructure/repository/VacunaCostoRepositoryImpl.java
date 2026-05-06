@@ -34,6 +34,7 @@ public class VacunaCostoRepositoryImpl
     }
 
     @Override
+    @Transactional
     public List<VacunaCosto> findByIdVacuna(Integer idVacuna) {
         return find("vacuna.id", idVacuna)
                 .stream()
@@ -42,6 +43,7 @@ public class VacunaCostoRepositoryImpl
     }
 
     @Override
+    @Transactional
     public Optional<VacunaCosto> findCostoById(Integer id) {
         return findByIdOptional(id)
                 .map(VacunaCostoMapper::toDomain);

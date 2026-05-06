@@ -26,9 +26,9 @@ public class VacunaCostoMapper {
         VacunaCostoEntity entity = new VacunaCostoEntity();
         entity.setId(modelo.getId());
 
-        VacunaEntity vacunaRef = new VacunaEntity();
-        vacunaRef.setId(modelo.getIdVacuna());
-        entity.setVacuna(vacunaRef);
+        //VacunaEntity vacunaRef = new VacunaEntity();
+        //vacunaRef.setId(modelo.getIdVacuna());
+        //entity.setVacuna(vacunaRef);
 
         entity.setCostoUnitario(modelo.getCostoUnitario());
         entity.setCreadoEn(modelo.getCreadoEn());
