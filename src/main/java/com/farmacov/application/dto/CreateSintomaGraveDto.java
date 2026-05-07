@@ -1,4 +1,4 @@
-package org.acme.application.dto;
+package com.farmacov.application.dto;
 
 public class CreateSintomaGraveDto {
     private Integer idVacuna;

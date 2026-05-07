@@ -1,6 +1,6 @@
-package org.acme.domain.repository;
+package com.farmacov.domain.repository;
 
-import org.acme.domain.models.SintomaGrave;
+import com.farmacov.domain.models.SintomaGrave;
 
 import java.util.List;
 import java.util.Optional;
