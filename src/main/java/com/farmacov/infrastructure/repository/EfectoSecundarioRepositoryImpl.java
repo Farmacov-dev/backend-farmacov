@@ -4,6 +4,7 @@ import com.farmacov.domain.models.EfectoSecundario;
 import com.farmacov.domain.models.EfectoSecundario.Severidad;
 import com.farmacov.domain.repository.EfectoSecundarioRepository;
 import com.farmacov.infrastructure.entities.EfectoSecundarioEntity;
+import com.farmacov.infrastructure.entities.VacunaEntity;
 import com.farmacov.infrastructure.mapper.EfectoSecundarioMapper;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
