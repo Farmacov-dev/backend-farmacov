@@ -11,7 +11,7 @@ import java.util.List;
 public class VacunaEntity {
 
     @Id
-    @Column(name = "id_vacuna")
+    @Column(name = "id")
     private Integer id;
 
     @Column(name = "nombre", length = 100, nullable = false)
