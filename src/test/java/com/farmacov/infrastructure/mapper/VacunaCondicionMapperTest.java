@@ -2,6 +2,7 @@ package com.farmacov.infrastructure.mapper;
 
 import com.farmacov.domain.models.VacunaCondicion;
 import com.farmacov.infrastructure.entities.VacunaCondicionEntity;
+import com.farmacov.infrastructure.entities.VacunaEntity;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

@@ -2,6 +2,7 @@ package com.farmacov.infrastructure.mapper;
 
 import com.farmacov.domain.models.EfectoSecundario;
 import com.farmacov.infrastructure.entities.EfectoSecundarioEntity;
+import com.farmacov.infrastructure.entities.VacunaEntity;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

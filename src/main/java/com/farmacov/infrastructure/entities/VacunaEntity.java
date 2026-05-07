@@ -1,7 +1,7 @@
 package com.farmacov.infrastructure.entities;
 
+
 import jakarta.persistence.*;
-import org.acme.infrastructure.entities.SintomaGraveEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -93,7 +93,7 @@ public class VacunaEntity {
     }
 
     // S
-    public void setIdVacuna(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

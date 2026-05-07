@@ -3,6 +3,7 @@ package com.farmacov.infrastructure.repository;
 import com.farmacov.domain.models.VacunaCosto;
 import com.farmacov.domain.repository.VacunaCostoRepository;
 import com.farmacov.infrastructure.entities.VacunaCostoEntity;
+import com.farmacov.infrastructure.entities.VacunaEntity;
 import com.farmacov.infrastructure.mapper.VacunaCostoMapper;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;

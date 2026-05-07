@@ -17,8 +17,8 @@ import org.hibernate.type.SqlTypes;
 public class UsuariosEntity {
 
     @Id
-    @JdbcTypeCode(SqlTypes.CHAR) // guarda el UUID como texto legible en la db
-    @Column(length = 36)
+    @JdbcTypeCode(SqlTypes.BINARY) // guarda el UUID como texto legible en la db
+    @Column(length = 16)           // cambio a binary, preguntar a sebas si essta bien
     private UUID id;
 
     @Column(name = "firebase_uuid", nullable = false, unique = true, length = 128)

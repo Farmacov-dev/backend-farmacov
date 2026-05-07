@@ -3,6 +3,7 @@ package com.farmacov.infrastructure.repository;
 import com.farmacov.domain.models.VacunaCondicion;
 import com.farmacov.domain.repository.VacunaCondicionRepository;
 import com.farmacov.infrastructure.entities.VacunaCondicionEntity;
+import com.farmacov.infrastructure.entities.VacunaEntity;
 import com.farmacov.infrastructure.mapper.VacunaCondicionMapper;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;

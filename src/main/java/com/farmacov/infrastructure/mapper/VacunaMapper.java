@@ -5,7 +5,7 @@ import com.farmacov.infrastructure.entities.EfectoSecundarioEntity;
 import com.farmacov.infrastructure.entities.VacunaCondicionEntity;
 import com.farmacov.infrastructure.entities.VacunaCostoEntity;
 import com.farmacov.infrastructure.entities.VacunaEntity;
-import org.acme.infrastructure.entities.SintomaGraveEntity;
+import com.farmacov.infrastructure.entities.SintomaGraveEntity;
 
 public class VacunaMapper {
 
@@ -65,7 +65,7 @@ public class VacunaMapper {
         if (vacuna == null) return null;
 
         VacunaEntity entity = new VacunaEntity();
-        entity.setIdVacuna(vacuna.getIdVacuna());
+        entity.setId(vacuna.getIdVacuna());
         entity.setNombre(vacuna.getNombre());
         entity.setFarmaceutica(vacuna.getFarmaceutica());
         entity.setTipo(vacuna.getTipo());
