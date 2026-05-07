@@ -1,7 +1,10 @@
 package com.farmacov.infrastructure.entities;
 
 import jakarta.persistence.*;
+import org.acme.infrastructure.entities.SintomaGraveEntity;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "vacunas")
@@ -9,7 +12,7 @@ public class VacunaEntity {
 
     @Id
     @Column(name = "id_vacuna")
-    private Integer idVacuna;
+    private Integer id;
 
     @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
@@ -29,24 +32,24 @@ public class VacunaEntity {
     @Column(name = "actualizado_en")
     private LocalDateTime actualizadoEn;
 
-    @OneToOne(mappedBy = "vacuna", fetch = FetchType.LAZY)
-    private VacunaCondicionEntityReferencia condicion;
+    @OneToMany(mappedBy = "vacuna", fetch = FetchType.LAZY)
+    private List<VacunaCondicionEntity> condiciones;
 
-    @OneToOne(mappedBy = "vacuna", fetch = FetchType.LAZY)
-    private VacunaCostoEntityReferencia costo;
+    @OneToMany(mappedBy = "vacuna", fetch = FetchType.LAZY)
+    private List<VacunaCostoEntity> costos;
 
-    @OneToOne(mappedBy = "vacuna", fetch = FetchType.LAZY)
-    private EfectoSecundarioEntityReferencia efectoSecundario;
+    @OneToMany(mappedBy = "vacuna", fetch = FetchType.LAZY)
+    private List<EfectoSecundarioEntity> efectosSecundarios;
 
-    @OneToOne(mappedBy = "vacuna", fetch = FetchType.LAZY)
-    private SintomaGraveEntityReferencia sintomaGrave;
+    @OneToMany(mappedBy = "vacuna", fetch = FetchType.LAZY)
+    private List<SintomaGraveEntity> sintomasGraves;
 
     // C
     public VacunaEntity() {}
 
     // G
-    public Integer getIdVacuna() {
-        return idVacuna;
+    public Integer getId() {
+        return id;
     }
 
     public String getNombre() {
@@ -73,25 +76,25 @@ public class VacunaEntity {
         return actualizadoEn;
     }
 
-    public VacunaCondicionEntityReferencia getCondicion() {
-        return condicion;
+    public List<VacunaCondicionEntity> getCondiciones() {
+        return condiciones;
     }
 
-    public VacunaCostoEntityReferencia getCosto() {
-        return costo;
+    public List<VacunaCostoEntity> getCostos() {
+        return costos;
     }
 
-    public EfectoSecundarioEntityReferencia getEfectoSecundario() {
-        return efectoSecundario;
+    public List<EfectoSecundarioEntity> getEfectosSecundarios() {
+        return efectosSecundarios;
     }
 
-    public SintomaGraveEntityReferencia getSintomaGrave() {
-        return sintomaGrave;
+    public List<SintomaGraveEntity> getSintomasGraves() {
+        return sintomasGraves;
     }
 
     // S
-    public void setIdVacuna(Integer idVacuna) {
-        this.idVacuna = idVacuna;
+    public void setIdVacuna(Integer id) {
+        this.id = id;
     }
 
     public void setNombre(String nombre) {
@@ -118,19 +121,19 @@ public class VacunaEntity {
         this.actualizadoEn = actualizadoEn;
     }
 
-    public void setCondicion(VacunaCondicionEntityReferencia condicion) {
-        this.condicion = condicion;
+    public void setCondiciones(List<VacunaCondicionEntity> condiciones) {
+        this.condiciones = condiciones;
     }
 
-    public void setCosto(VacunaCostoEntityReferencia costo) {
-        this.costo = costo;
+    public void setCostos(List<VacunaCostoEntity> costos) {
+        this.costos = costos;
     }
 
-    public void setEfectoSecundario(EfectoSecundarioEntityReferencia efectoSecundario) {
-        this.efectoSecundario = efectoSecundario;
+    public void setEfectosSecundarios(List<EfectoSecundarioEntity> efectosSecundarios) {
+        this.efectosSecundarios = efectosSecundarios;
     }
 
-    public void setSintomaGrave(SintomaGraveEntityReferencia sintomaGrave) {
-        this.sintomaGrave = sintomaGrave;
+    public void setSintomasGraves(List<SintomaGraveEntity> sintomasGraves) {
+        this.sintomasGraves = sintomasGraves;
     }
 }
