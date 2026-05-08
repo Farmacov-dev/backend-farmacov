@@ -46,7 +46,7 @@ class EfectoSecundarioMapperTest {
         assertEquals(1, entity.getId());
         assertEquals("Dolor de cabeza", entity.getDescripcion());
         assertEquals(EfectoSecundarioEntity.Severidad.leve, entity.getSeveridad());
-        // null intencionalmente — el Repository asigna vacuna con em.getReference()
+        // null intencionalmente, el Repository asigna vacuna con em.getReference()
         assertNull(entity.getVacuna());
     }
 }
