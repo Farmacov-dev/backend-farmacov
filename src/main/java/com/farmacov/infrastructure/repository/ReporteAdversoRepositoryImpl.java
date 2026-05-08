@@ -47,4 +47,20 @@ public class ReporteAdversoRepositoryImpl
                 .map(ReporteAdversoMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    @Transactional
+    public List<ReporteAdverso> getByIdVacuna(Integer idVacuna) {
+        return find("vacuna.id", idVacuna).stream()
+                .map(ReporteAdversoMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public List<ReporteAdverso> getByEsGrave(Boolean esGrave) {
+        return find("esGrave", esGrave).stream()
+                .map(ReporteAdversoMapper::toDomain)
+                .toList();
+    }
 }

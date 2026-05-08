@@ -9,4 +9,7 @@ public interface ReporteAdversoRepository {
     ReporteAdverso save(ReporteAdverso reporteAdverso);
     Optional<ReporteAdverso> getById(Long id);
     List<ReporteAdverso> getAll();
+    List<ReporteAdverso> getByIdVacuna(Integer idVacuna);
+    List<ReporteAdverso> getByEsGrave(Boolean esGrave);
+
 }
