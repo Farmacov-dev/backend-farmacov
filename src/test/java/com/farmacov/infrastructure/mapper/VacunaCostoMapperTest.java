@@ -55,7 +55,7 @@ class VacunaCostoMapperTest {
         assertEquals(new BigDecimal("99.99"), entity.getCostoUnitario());
         assertEquals(ahora, entity.getCreadoEn());
         assertEquals(ahora, entity.getActualizadoEn());
-        // null intencionalmente — el Repository asigna vacuna con em.getReference()
+        // null intencionalmente,  el Repository asigna vacuna con em.getReference()
         assertNull(entity.getVacuna());
     }
 }

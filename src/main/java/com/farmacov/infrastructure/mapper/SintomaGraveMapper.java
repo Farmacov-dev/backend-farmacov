@@ -2,7 +2,6 @@ package com.farmacov.infrastructure.mapper;
 
 import com.farmacov.domain.models.SintomaGrave;
 import com.farmacov.infrastructure.entities.SintomaGraveEntity;
-import com.farmacov.infrastructure.entities.VacunaEntity;
 
 public class SintomaGraveMapper {
 
@@ -11,7 +10,7 @@ public class SintomaGraveMapper {
         sintomaGrave.setId(entity.getId()); // cambio de getid
         //ahora solo se exxtrae el id de la vacuna como en los mappers
         if (entity.getVacuna() != null) {
-            sintomaGrave.setIdVacuna(entity.getVacuna().getId());
+            sintomaGrave.setIdVacuna(entity.getVacuna() !=null ? entity.getVacuna().getId() : null);
         }
         sintomaGrave.setNombre(entity.getNombre());
         return sintomaGrave;
