@@ -1,5 +1,4 @@
-//quitar comentado cuando VacunaRepositoryImpl exista y se confirme
-/*package com.farmacov.application.usecase;
+package com.farmacov.application.usecase;
 
 import com.farmacov.application.dto.ActualizarEfectoSecundarioDto;
 import com.farmacov.application.dto.CrearEfectoSecundarioDto;
@@ -69,7 +68,7 @@ public class EfectoSecundarioUseCase {
                 ));
 
         existente.setDescripcion(dto.getDescripcion());
-        // Sin traduccion,  mismo enum directo
+        // Sin traduccion, mismo enum directo
         existente.setSeveridad(dto.getSeveridad());
 
         return efectoSecundarioRepository.update(existente);
@@ -83,4 +82,4 @@ public class EfectoSecundarioUseCase {
 
         efectoSecundarioRepository.deleteEfectoById(id);
     }
-} */
+}

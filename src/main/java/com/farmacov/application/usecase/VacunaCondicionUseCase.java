@@ -1,6 +1,4 @@
-//quitar comentado cuando VacunaRepositoryImpl exista y se confirme
 
-/*
 package com.farmacov.application.usecase;
 
 import com.farmacov.application.dto.ActualizarVacunaCondicionDto;
@@ -86,4 +84,3 @@ public class VacunaCondicionUseCase {
     }
 }
 
- */
