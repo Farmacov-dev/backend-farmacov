@@ -1,11 +1,14 @@
 package com.farmacov.infrastructure.mapper;
 
+import com.farmacov.domain.models.EfectoSecundario;
 import com.farmacov.domain.models.Vacuna;
-import com.farmacov.infrastructure.entities.EfectoSecundarioEntity;
 import com.farmacov.infrastructure.entities.VacunaCondicionEntity;
 import com.farmacov.infrastructure.entities.VacunaCostoEntity;
 import com.farmacov.infrastructure.entities.VacunaEntity;
-import com.farmacov.infrastructure.entities.SintomaGraveEntity;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class VacunaMapper {
 
@@ -25,36 +28,38 @@ public class VacunaMapper {
         vacuna.setCreadoEn(entity.getCreadoEn());
         vacuna.setActualizadoEn(entity.getActualizadoEn());
 
-        // vacunas_condiciones — OneToMany: tomamos el primer registro disponible
-        // el orden lo define el JOIN FETCH en el repositorio (ORDER BY c.id ASC)
+        // vacuna_condiciones — tomamos el primer registro (JOIN FETCH ordena por id ASC en el repositorio)
         if (entity.getCondiciones() != null && !entity.getCondiciones().isEmpty()) {
             VacunaCondicionEntity condicion = entity.getCondiciones().get(0);
             vacuna.setTemperatura(condicion.getTemperatura());
             vacuna.setTiempoAmbiente(condicion.getTiempoAmbiente());
         }
 
-        // vacuna_costos — OneToMany: tomamos el primer registro disponible
+        // vacuna_costos — tomamos el primer registro (costo vigente)
         if (entity.getCostos() != null && !entity.getCostos().isEmpty()) {
             VacunaCostoEntity costo = entity.getCostos().get(0);
             vacuna.setCostoUnitario(costo.getCostoUnitario());
         }
 
-        // efectos_secundarios — OneToMany: tomamos el primer registro disponible
-        if (entity.getEfectosSecundarios() != null && !entity.getEfectosSecundarios().isEmpty()) {
-            EfectoSecundarioEntity efecto = entity.getEfectosSecundarios().get(0);
-            vacuna.setDescripcionEfecto(efecto.getDescripcion());
-            vacuna.setSeveridadEfecto(
-                    efecto.getSeveridad() != null
-                            ? efecto.getSeveridad().name()
-                            : null
-            );
-        }
+        // efectos_secundarios — mapeamos la lista completa al modelo de dominio
+        List<EfectoSecundario> efectos = (entity.getEfectosSecundarios() != null)
+                ? entity.getEfectosSecundarios().stream()
+                        .map(e -> {
+                            EfectoSecundario ef = new EfectoSecundario();
+                            ef.setId(e.getId());
+                            ef.setIdVacuna(entity.getId());
+                            ef.setDescripcion(e.getDescripcion());
+                            ef.setSeveridad(
+                                e.getSeveridad() != null
+                                    ? EfectoSecundario.Severidad.valueOf(e.getSeveridad().name())
+                                    : null
+                            );
+                            return ef;
+                        })
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
 
-        // sintomas_graves — OneToMany: tomamos el primer registro disponible
-        if (entity.getSintomasGraves() != null && !entity.getSintomasGraves().isEmpty()) {
-            SintomaGraveEntity sintoma = entity.getSintomasGraves().get(0);
-            vacuna.setNombreSintomaGrave(sintoma.getNombre());
-        }
+        vacuna.setEfectosSecundarios(efectos);
 
         return vacuna;
     }
