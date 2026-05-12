@@ -93,4 +93,10 @@ public class VacunaRepositoryImpl implements VacunaRepository, PanacheRepository
 
         return entityOpt.map(VacunaMapper::toDomain);
     }
+
+    //metodo para optimizacion de kpi
+    @Override
+    public long countVacunas() {
+        return count();
+    }
 }
