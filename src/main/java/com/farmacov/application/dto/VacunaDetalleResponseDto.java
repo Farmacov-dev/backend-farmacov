@@ -1,78 +1,98 @@
 package com.farmacov.application.dto;
 
 import com.farmacov.domain.models.Vacuna;
+
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class VacunaDetalleResponseDto extends VacunaCatalogoResponseDto {
+// DTO para GET /vacunas/{id} — vista de detalle de una vacuna
+// Clase independiente: los campos son distintos a los del catálogo
+public class VacunaDetalleResponseDto {
 
+    // A — vacunas
+    private String nombre;
+    private String farmaceutica;
     private String tipo;
-    private String descripcionGeneral;
-    private String descripcionEfecto;
-    private String severidadEfecto;
-    private String nombreSintomaGrave;
 
+    // A — vacuna_condiciones
+    private BigDecimal temperatura;
+    private BigDecimal tiempoAmbiente;
+
+    // A — efectos_secundarios (lista completa de la tabla)
+    private List<EfectoSecundarioDto> efectosSecundarios;
+
+    // C
     public VacunaDetalleResponseDto() {}
 
-    public static VacunaDetalleResponseDto fromDomain(Vacuna vacuna, BigDecimal efectividad) {
+    // factory — construye el dto a partir del modelo de dominio
+    public static VacunaDetalleResponseDto fromDomain(Vacuna vacuna) {
         VacunaDetalleResponseDto dto = new VacunaDetalleResponseDto();
 
-        // campos heredados del catálogo
-        dto.setIdVacuna(vacuna.getIdVacuna());
-        dto.setNombre(vacuna.getNombre());
-        dto.setFarmaceutica(vacuna.getFarmaceutica());
-        dto.setCostoUnitario(vacuna.getCostoUnitario());
-        dto.setTemperatura(vacuna.getTemperatura());
-        dto.setTiempoAmbiente(vacuna.getTiempoAmbiente());
-        dto.setEfectividad(efectividad);
+        dto.nombre        = vacuna.getNombre();
+        dto.farmaceutica  = vacuna.getFarmaceutica();
+        dto.tipo          = vacuna.getTipo();
+        dto.temperatura   = vacuna.getTemperatura();
+        dto.tiempoAmbiente = vacuna.getTiempoAmbiente();
 
-        // campos propios del detalle
-        dto.tipo              = vacuna.getTipo();
-        dto.descripcionGeneral = vacuna.getDescripcionGeneral();
-        dto.descripcionEfecto = vacuna.getDescripcionEfecto();
-        dto.severidadEfecto   = vacuna.getSeveridadEfecto();
-        dto.nombreSintomaGrave = vacuna.getNombreSintomaGrave();
+        // convierte cada EfectoSecundario del dominio a su DTO de respuesta
+        dto.efectosSecundarios = vacuna.getEfectosSecundarios() != null
+                ? vacuna.getEfectosSecundarios().stream()
+                        .map(EfectoSecundarioDto::fromDomain)
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
 
         return dto;
     }
 
+    // G
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getFarmaceutica() {
+        return farmaceutica;
+    }
 
     public String getTipo() {
         return tipo;
     }
 
-    public String getDescripcionGeneral() {
-        return descripcionGeneral;
+    public BigDecimal getTemperatura() {
+        return temperatura;
     }
 
-    public String getDescripcionEfecto() {
-        return descripcionEfecto;
+    public BigDecimal getTiempoAmbiente() {
+        return tiempoAmbiente;
     }
 
-    public String getSeveridadEfecto() {
-        return severidadEfecto;
+    public List<EfectoSecundarioDto> getEfectosSecundarios() {
+        return efectosSecundarios;
     }
 
-    public String getNombreSintomaGrave() {
-        return nombreSintomaGrave;
+    // S
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setFarmaceutica(String farmaceutica) {
+        this.farmaceutica = farmaceutica;
     }
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
-    public void setDescripcionGeneral(String descripcionGeneral) {
-        this.descripcionGeneral = descripcionGeneral;
+    public void setTemperatura(BigDecimal temperatura) {
+        this.temperatura = temperatura;
     }
 
-    public void setDescripcionEfecto(String descripcionEfecto) {
-        this.descripcionEfecto = descripcionEfecto;
+    public void setTiempoAmbiente(BigDecimal tiempoAmbiente) {
+        this.tiempoAmbiente = tiempoAmbiente;
     }
 
-    public void setSeveridadEfecto(String severidadEfecto) {
-        this.severidadEfecto = severidadEfecto;
-    }
-
-    public void setNombreSintomaGrave(String nombreSintomaGrave) {
-        this.nombreSintomaGrave = nombreSintomaGrave;
+    public void setEfectosSecundarios(List<EfectoSecundarioDto> efectosSecundarios) {
+        this.efectosSecundarios = efectosSecundarios;
     }
 }

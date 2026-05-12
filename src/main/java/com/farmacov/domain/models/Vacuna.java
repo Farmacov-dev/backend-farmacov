@@ -2,10 +2,11 @@ package com.farmacov.domain.models;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Vacuna {
 
-
+    // A — vacunas
     private Integer idVacuna;
     private String nombre;
     private String farmaceutica;
@@ -21,44 +22,13 @@ public class Vacuna {
     // Atributos de vacuna_costos
     private BigDecimal costoUnitario;
 
-    private String descripcionEfecto;
-    private String severidadEfecto;
+    // Atributos de efectos_secundarios — lista completa
+    private List<EfectoSecundario> efectosSecundarios;
 
-    private String nombreSintomaGrave;
-
-
+    // C
     public Vacuna() {}
 
-    public Vacuna(
-            Integer idVacuna,
-            String nombre,
-            String farmaceutica,
-            String tipo,
-            String descripcionGeneral,
-            LocalDateTime creadoEn,
-            LocalDateTime actualizadoEn,
-            BigDecimal temperatura,
-            BigDecimal tiempoAmbiente,
-            BigDecimal costoUnitario,
-            String descripcionEfecto,
-            String severidadEfecto,
-            String nombreSintomaGrave
-    ) {
-        this.idVacuna = idVacuna;
-        this.nombre = nombre;
-        this.farmaceutica = farmaceutica;
-        this.tipo = tipo;
-        this.descripcionGeneral = descripcionGeneral;
-        this.creadoEn = creadoEn;
-        this.actualizadoEn = actualizadoEn;
-        this.temperatura = temperatura;
-        this.tiempoAmbiente = tiempoAmbiente;
-        this.costoUnitario = costoUnitario;
-        this.descripcionEfecto = descripcionEfecto;
-        this.severidadEfecto = severidadEfecto;
-        this.nombreSintomaGrave = nombreSintomaGrave;
-    }
-
+    // G
     public Integer getIdVacuna() {
         return idVacuna;
     }
@@ -99,16 +69,8 @@ public class Vacuna {
         return costoUnitario;
     }
 
-    public String getDescripcionEfecto() {
-        return descripcionEfecto;
-    }
-
-    public String getSeveridadEfecto() {
-        return severidadEfecto;
-    }
-
-    public String getNombreSintomaGrave() {
-        return nombreSintomaGrave;
+    public List<EfectoSecundario> getEfectosSecundarios() {
+        return efectosSecundarios;
     }
 
     // S
@@ -152,15 +114,7 @@ public class Vacuna {
         this.costoUnitario = costoUnitario;
     }
 
-    public void setDescripcionEfecto(String descripcionEfecto) {
-        this.descripcionEfecto = descripcionEfecto;
-    }
-
-    public void setSeveridadEfecto(String severidadEfecto) {
-        this.severidadEfecto = severidadEfecto;
-    }
-
-    public void setNombreSintomaGrave(String nombreSintomaGrave) {
-        this.nombreSintomaGrave = nombreSintomaGrave;
+    public void setEfectosSecundarios(List<EfectoSecundario> efectosSecundarios) {
+        this.efectosSecundarios = efectosSecundarios;
     }
 }

@@ -1,6 +1,7 @@
 package com.farmacov.application.dto;
 
-import com.farmacov.infrastructure.entities.EfectoSecundarioEntity.Severidad;
+//import com.farmacov.infrastructure.entities.EfectoSecundarioEntity.Severidad;
+import com.farmacov.domain.models.EfectoSecundario.Severidad;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
