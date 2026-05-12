@@ -21,4 +21,8 @@ public interface VacunaCostoRepository {
 
     // elimiar un costo por su ID
     void deleteCostoById(Integer id);
+
+    // buscar los costos
+    List<VacunaCosto> findAllCostos();
+
 }
