@@ -15,10 +15,10 @@ import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class VacunaCostoRepositoryImpl
-        implements VacunaCostoRepository, PanacheRepositoryBase<VacunaCostoEntity, Integer> {
+public class VacunaCostoRepositoryImpl implements VacunaCostoRepository, PanacheRepositoryBase<VacunaCostoEntity, Integer> {
 
     @Inject
     EntityManager em;
@@ -67,5 +67,14 @@ public class VacunaCostoRepositoryImpl
     @Transactional
     public void deleteCostoById(Integer id) {
         deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public List<VacunaCosto> findAllCostos(){
+        return listAll()
+                .stream()
+                .map(VacunaCostoMapper::toDomain)
+                .collect(Collectors.toList());
     }
 }
