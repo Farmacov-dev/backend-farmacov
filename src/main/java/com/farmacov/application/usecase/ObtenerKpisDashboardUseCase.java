@@ -20,15 +20,15 @@ public class ObtenerKpisDashboardUseCase {
     ReporteAdversoRepository reporteAdversoRepository;
 
     public KpisDashboardDto execute() {
-        // COUNT(*) directo — eficiente, no carga objetos en memoria
+        // implementado ccunt desde VacunaRepository por optimizacion
         long totalVacunas = vacunaRepository.countVacunas();
 
-        // Traemos todos los reportes una sola vez
-        // y los reutilizamos para los tres cálculos siguientes
+        // se traen todos los reportes de una vez
+        // se reutilizan en todos los calculos
         List<ReporteAdverso> todosLosReportes = reporteAdversoRepository.getAll();
         long totalReportes = todosLosReportes.size();
 
-        // Filtramos por mes y año actual en Java — sin query extra a la BD
+        // se filtra por mes y ano actual en Java, esto se tiene que optimizar
         int mesActual = LocalDate.now().getMonthValue();
         int anioActual = LocalDate.now().getYear();
         long reportesEsteMes = todosLosReportes.stream()
@@ -37,11 +37,10 @@ public class ObtenerKpisDashboardUseCase {
                         && r.getFechaReporte().getYear() == anioActual)
                 .count();
 
-        // Reportes graves — usamos el método ya existente en el repo
+        // reportes graves, usamos el metodo ya existente en el repo
         long totalReportesGraves = reporteAdversoRepository.getByEsGrave(true).size();
 
-        // Porcentaje redondeado a 1 decimal
-        // Verificamos que total > 0 para evitar división por cero
+
         double porcentaje = totalReportes > 0
                 ? Math.round((totalReportesGraves * 100.0 / totalReportes) * 10.0) / 10.0
                 : 0.0;
