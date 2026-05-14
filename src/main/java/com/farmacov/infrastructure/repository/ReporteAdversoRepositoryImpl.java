@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,5 +63,16 @@ public class ReporteAdversoRepositoryImpl
         return find("esGrave", esGrave).stream()
                 .map(ReporteAdversoMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public Optional<LocalDateTime> findFechaUltimaActualizacion() {
+        return getEntityManager()
+                .createQuery("SELECT r.creadoEn FROM ReporteAdversoEntity r ORDER BY r.id DESC",
+                        LocalDateTime.class)
+                .setMaxResults(1)
+                .getResultStream()
+                .findFirst();
     }
 }
