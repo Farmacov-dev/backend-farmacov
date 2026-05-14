@@ -12,10 +12,10 @@
 
 substitutions:
   _REGION: us-central1
-  _REPOSITORY: backendgrupo2
-  _IMAGE: backend
-  _SERVICE: backendgrupo2
-  _PROJECT_ID: tc3005b-494022
+  _REPOSITORY: backend-farmacov
+  _IMAGE: backend-farmacov
+  _SERVICE: backend-farmacov
+  _PROJECT_ID: project-1f1c8817-494f-4eb9-a0d
 
 options:
   logging: CLOUD_LOGGING_ONLY
