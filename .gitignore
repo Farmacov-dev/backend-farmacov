@@ -43,6 +43,5 @@ nb-configuration.xml
 /.quarkus/cli/plugins/
 
 # Crdentials
-application.properties
 serviceAccountKey.json
 *.json
