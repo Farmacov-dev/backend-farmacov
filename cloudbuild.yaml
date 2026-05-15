@@ -12,7 +12,7 @@
 
 substitutions:
   _REGION: us-central1
-  _REPOSITORY: backend-farmacov
+  _REPOSITORY: farmacov-repo
   _IMAGE: backend-farmacov
   _SERVICE: backend-farmacov
   _PROJECT_ID: project-1f1c8817-494f-4eb9-a0d
