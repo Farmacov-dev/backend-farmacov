@@ -16,9 +16,11 @@ import java.util.Set;
 public class AuthFilter implements ContainerRequestFilter {
 
     // aqi van las rutas que no requieren token
+    //auth/registro  es temporal aqui para pruebas
     private static final Set<String> PUBLIC_PATHS = Set.of(
             "/status",
-            "/auth/login"
+            "/auth/login",
+            "/auth/registro"
     );
 
     @Inject
