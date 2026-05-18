@@ -20,7 +20,11 @@ public class AuthFilter implements ContainerRequestFilter {
     private static final Set<String> PUBLIC_PATHS = Set.of(
             "/status",
             "/auth/login",
-            "/auth/registro"
+            "/auth/registro",
+            "/dashboard/indice-seguridad",
+            "/dashboard/resumen-sintomas",
+            "/usuarios",
+            "/dashboard/costos"
     );
 
     @Inject

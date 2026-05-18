@@ -1,5 +1,6 @@
 package com.farmacov.infrastructure.repository;
 
+import com.farmacov.application.dto.IndiceSeguridadDto;
 import com.farmacov.domain.models.ReporteAdverso;
 import com.farmacov.domain.repository.ReporteAdversoRepository;
 import com.farmacov.infrastructure.entities.ReporteAdversoEntity;
@@ -10,6 +11,9 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.StoredProcedureQuery;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
@@ -75,4 +79,41 @@ public class ReporteAdversoRepositoryImpl
                 .getResultStream()
                 .findFirst();
     }
+
+    @Override
+    public IndiceSeguridadDto getIndiceSeguridad(Integer idVacuna) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_indice_seguridad");
+        q.registerStoredProcedureParameter("p_id_vacuna", Integer.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter("p_total",     Long.class,    ParameterMode.OUT);
+        q.registerStoredProcedureParameter("p_graves",    Long.class,    ParameterMode.OUT);
+        q.registerStoredProcedureParameter("p_indice",    Double.class,  ParameterMode.OUT);
+        q.setParameter("p_id_vacuna", idVacuna);
+        q.execute();
+        return new IndiceSeguridadDto(
+                idVacuna, null,
+                (Long)   q.getOutputParameterValue("p_total"),
+                (Long)   q.getOutputParameterValue("p_graves"),
+                (Double) q.getOutputParameterValue("p_indice")
+        );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<IndiceSeguridadDto> getAllIndiceSeguridad() {
+        List<Object[]> rows = em
+                .createNativeQuery("SELECT id_vacuna, nombre_vacuna, total_reportes, reportes_graves, indice_seguridad FROM vista_indice_seguridad")
+                .getResultList();
+        return rows.stream().map(r -> new IndiceSeguridadDto(
+                ((Number) r[0]).intValue(),
+                (String)  r[1],
+                ((Number) r[2]).longValue(),
+                ((Number) r[3]).longValue(),
+                r[4] != null ? ((Number) r[4]).doubleValue() : null
+        )).toList();
+    }
+
+
+
+
+
 }
