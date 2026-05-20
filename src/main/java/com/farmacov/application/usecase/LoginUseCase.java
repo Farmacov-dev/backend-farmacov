@@ -47,6 +47,9 @@ public class LoginUseCase {
         );
         dto.setDepartamento(usuario.getDepartamento());
         dto.setRol(usuario.getRol() != null ? usuario.getRol().getNombre() : "");
+        // adiciones para toggle
+        dto.setEsAdmin(usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdmin()));
+        dto.setPermisos(usuario.getRol() != null ? usuario.getRol().getPermisos() :  null);
         return dto;
     }
 }

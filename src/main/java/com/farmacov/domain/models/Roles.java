@@ -1,10 +1,14 @@
 package com.farmacov.domain.models;
 
+import java.util.Map;
+
 public class Roles {
     // A
     private Integer id;
     private String nombre;
     private Boolean esAdmin;
+    // adicion para toggles
+    private Map<String, Boolean> permisos;
 
     // C
 
@@ -26,6 +30,11 @@ public class Roles {
         return  esAdmin;
     }
 
+    // adicion para toggles
+    public Map<String, Boolean> getPermisos(){
+        return permisos;
+    }
+
     // S
 
     public void setId(Integer id){
@@ -39,4 +48,7 @@ public class Roles {
     public void setEsAdmin(Boolean esAdmin){
         this.esAdmin = esAdmin;
     }
+
+    //adicion para toggles
+    public void setPermisos(Map<String, Boolean> permisos){this.permisos = permisos;}
 }

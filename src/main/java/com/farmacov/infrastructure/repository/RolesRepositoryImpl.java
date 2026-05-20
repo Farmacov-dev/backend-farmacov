@@ -38,4 +38,14 @@ public class RolesRepositoryImpl implements RolesRepository, PanacheRepositoryBa
         return RolesMapper.toDomain(entity); // devuelve el rol guardado como modelo
     }
 
+    @Transactional
+    @Override
+    public Roles updateRole(Roles rol) {
+        RolesEntity entity = RolesMapper.toEntity(rol);
+        RolesEntity actualizado = getEntityManager().merge(entity);
+        return RolesMapper.toDomain(actualizado);
+    }
+
+
+
 }
