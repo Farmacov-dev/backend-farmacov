@@ -12,6 +12,7 @@ public class RolesMapper {
         roles.setId(entity.getId());
         roles.setNombre(entity.getNombre());
         roles.setEsAdmin(entity.isEsAdmin());
+        roles.setPermisos(entity.getPermisos()); // adicion para el toggle de permisos
         return roles;
     }
 
@@ -22,6 +23,7 @@ public class RolesMapper {
         entity.setId(roles.getId());
         entity.setNombre(roles.getNombre());
         entity.setEsAdmin(roles.getEsAdmin() != null && roles.getEsAdmin());
+        entity.setPermisos(roles.getPermisos()); // adicion para el toggle de permisos
         return entity;
     }
 }

@@ -7,4 +7,5 @@ public interface RolesRepository {
     List<Roles> findAllRoles(); // trae todos los roles de la db
     Optional<Roles> findRoleById(Integer id); // busca uno por id
     Roles saveRole(Roles rol); // guarda el rol y lo devuelve
+    Roles updateRole(Roles rol);
 }

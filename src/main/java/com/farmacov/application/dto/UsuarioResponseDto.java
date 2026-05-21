@@ -1,4 +1,5 @@
 package com.farmacov.application.dto;
+import java.util.Map;
 
 public class UsuarioResponseDto {
 
@@ -8,6 +9,8 @@ public class UsuarioResponseDto {
     private String apellidoMaterno;
     private String departamento;
     private String rol;
+    private boolean esAdmin;    // adicion para toggle y ver pantallas de admin
+    private Map<String, Boolean> permisos;    //adicion para toggle
 
     public UsuarioResponseDto() {}
 
@@ -28,4 +31,11 @@ public class UsuarioResponseDto {
 
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+
+    // adiciones para toggle
+    public boolean isEsAdmin() { return esAdmin; }
+    public void setEsAdmin(boolean esAdmin) { this.esAdmin = esAdmin; }
+
+    public Map<String, Boolean> getPermisos() { return permisos; }
+    public void setPermisos(Map<String, Boolean> permisos) { this.permisos = permisos; }
 }
