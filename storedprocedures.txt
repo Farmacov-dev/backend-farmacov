@@ -1,0 +1,119 @@
+-- procedure para indice seguridad
+DELIMITER //
+
+CREATE PROCEDURE sp_indice_seguridad(
+    IN  p_id_vacuna  INT,
+    OUT p_total      BIGINT,
+    OUT p_graves     BIGINT,
+    OUT p_indice     DECIMAL(5,2)
+)
+BEGIN
+    SELECT
+        COUNT(*) INTO p_total
+    FROM reportes_adversos
+    WHERE id_vacuna = p_id_vacuna;
+
+    SELECT
+        COUNT(*) INTO p_graves
+    FROM reportes_adversos
+    WHERE id_vacuna = p_id_vacuna
+      AND es_grave  = 1;
+
+    SET p_indice = 100.0 * (1 - (p_graves / NULLIF(p_total, 0)));
+END //
+
+DELIMITER ;
+
+
+-- probar procedure
+
+CALL sp_indice_seguridad(3, @total, @graves, @indice);
+SELECT @total, @graves, @indice;
+
+
+-- indice de vista
+
+CREATE VIEW vista_indice_seguridad AS
+SELECT
+    v.id                                                        AS id_vacuna,
+    v.nombre                                                    AS nombre_vacuna,
+    COUNT(r.id)                                                 AS total_reportes,
+    SUM(r.es_grave)                                             AS reportes_graves,
+    100.0 * (1 - (SUM(r.es_grave) / NULLIF(COUNT(r.id), 0)))   AS indice_seguridad
+FROM vacunas v
+LEFT JOIN reportes_adversos r ON r.id_vacuna = v.id
+GROUP BY v.id, v.nombre;
+
+
+
+-- indices para filtros simples
+
+CREATE INDEX idx_reporte_vacuna    ON reportes_adversos (id_vacuna);
+CREATE INDEX idx_reporte_sexo      ON reportes_adversos (sexo);
+CREATE INDEX idx_reporte_grupo     ON reportes_adversos (grupo_edad);
+CREATE INDEX idx_reporte_grave     ON reportes_adversos (es_grave);
+
+-- indice compuesto para la consulta más frecuente del dashboard
+
+CREATE INDEX idx_reporte_vacuna_grave ON reportes_adversos (id_vacuna, es_grave);
+
+
+-- tabla precalculada para resumen de vacunas
+
+CREATE TABLE resumen_sintomas (
+    id              INT          NOT NULL AUTO_INCREMENT,
+    id_vacuna       INT          NOT NULL,
+    nombre_vacuna   VARCHAR(100) NOT NULL,
+    id_sintoma      INT,
+    nombre_sintoma  VARCHAR(150),
+    sexo            ENUM('M','F','U'),
+    grupo_edad      ENUM('0-17','18-29','30-49','50-64','65+','DESCONOCIDO'),
+    es_grave        TINYINT(1)   NOT NULL DEFAULT 0,
+    total           BIGINT       NOT NULL DEFAULT 0,
+    actualizado_en  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    INDEX idx_resumen_vacuna       (id_vacuna),
+    INDEX idx_resumen_vacuna_grave (id_vacuna, es_grave),
+    CONSTRAINT fk_resumen_vacuna FOREIGN KEY (id_vacuna) REFERENCES vacunas(id)
+) ENGINE=InnoDB;
+
+-- sp pare recalcular resumen_sintomas 
+
+-- SP de recálculo
+DELIMITER //
+
+CREATE PROCEDURE sp_recalcular_resumen_sintomas()
+BEGIN
+    TRUNCATE TABLE resumen_sintomas;
+
+    INSERT INTO resumen_sintomas (
+        id_vacuna, nombre_vacuna, id_sintoma, nombre_sintoma,
+        sexo, grupo_edad, es_grave, total
+    )
+    SELECT
+        v.id,
+        v.nombre,
+        sg.id,
+        sg.nombre,
+        ra.sexo,
+        ra.grupo_edad,
+        ra.es_grave,
+        COUNT(*) AS total
+    FROM reportes_adversos ra
+    JOIN vacunas v  ON v.id  = ra.id_vacuna
+    LEFT JOIN sintomas_graves sg ON sg.id = ra.id_sintoma
+    GROUP BY v.id, v.nombre, sg.id, sg.nombre, ra.sexo, ra.grupo_edad, ra.es_grave;
+END //
+
+DELIMITER ;
+
+-- llamar al recalculador
+
+CALL sp_recalcular_resumen_sintomas();
+
+-- probar recalculador
+
+SELECT * FROM resumen_sintomas LIMIT 10;
+
+
+

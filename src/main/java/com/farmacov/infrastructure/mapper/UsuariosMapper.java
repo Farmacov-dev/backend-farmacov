@@ -14,7 +14,7 @@ public class UsuariosMapper {
         usuario.setApellidoPaterno(entity.getApellidoPaterno());
         usuario.setApellidoMaterno(entity.getApellidoMaterno());
         usuario.setCorreo(entity.getCorreo());
-        usuario.setRol(RolesMapper.toDomain(entity.getRol()));
+        usuario.setRol(entity.getRol() != null ? RolesMapper.toDomain(entity.getRol()) : null);
         usuario.setDepartamento(entity.getDepartamento());
         usuario.setCreadoEn(entity.getCreadoEn());
         usuario.setActualizadoEn(entity.getActualizadoEn());
@@ -29,7 +29,7 @@ public class UsuariosMapper {
         entity.setApellidoPaterno(usuario.getApellidoPaterno());
         entity.setApellidoMaterno(usuario.getApellidoMaterno());
         entity.setCorreo(usuario.getCorreo());
-        entity.setRol(RolesMapper.toEntity(usuario.getRol()));
+        //entity.setRol(RolesMapper.toEntity(usuario.getRol()));
         entity.setDepartamento(usuario.getDepartamento());
         entity.setCreadoEn(usuario.getCreadoEn());
         entity.setActualizadoEn(usuario.getActualizadoEn());

@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface VacunaRepository {
     List<Vacuna> findAllVacunas();
     Optional<Vacuna> findVacunaById(Integer id);
+    long countVacunas();
 }
