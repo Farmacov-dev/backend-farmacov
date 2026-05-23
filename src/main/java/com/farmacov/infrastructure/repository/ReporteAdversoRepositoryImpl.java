@@ -123,6 +123,36 @@ public class ReporteAdversoRepositoryImpl
         )).toList();
     }
 
+    /// optimizaicon: implementacion de metodos optimizacion de kpis
+    @Override
+    public long countAll() {
+        // COUNT(*) directo — MySQL devuelve solo un número
+        return count();
+    }
+
+    @Override
+    public long countByEsGrave(boolean esGrave) {
+        // COUNT WHERE es_grave = ? — no trae objetos a memoria
+        return count("esGrave", esGrave);
+    }
+
+    @Override
+    @Transactional
+    public long countByMesYAnio(int mes, int anio) {
+        // MySQL filtra por mes y año — no viajan registros a Java
+        return (long) getEntityManager()
+                .createQuery(
+                        "SELECT COUNT(r) FROM ReporteAdversoEntity r " +
+                                "WHERE MONTH(r.fechaReporte) = :mes " +
+                                "AND YEAR(r.fechaReporte) = :anio")
+                .setParameter("mes", mes)
+                .setParameter("anio", anio)
+                .getSingleResult();
+    }
+
+
+
+
 
 
 

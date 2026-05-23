@@ -1,14 +1,12 @@
 package com.farmacov.application.usecase;
 
 import com.farmacov.application.dto.KpisDashboardDto;
-import com.farmacov.domain.models.ReporteAdverso;
 import com.farmacov.domain.repository.ReporteAdversoRepository;
 import com.farmacov.domain.repository.VacunaRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @ApplicationScoped
 public class ObtenerKpisDashboardUseCase {
@@ -20,27 +18,18 @@ public class ObtenerKpisDashboardUseCase {
     ReporteAdversoRepository reporteAdversoRepository;
 
     public KpisDashboardDto execute() {
-        // implementado ccunt desde VacunaRepository por optimizacion
+        // COUNT(*) — MySQL devuelve solo un número, no objetos
         long totalVacunas = vacunaRepository.countVacunas();
+        long totalReportes = reporteAdversoRepository.countAll();
+        long totalReportesGraves = reporteAdversoRepository.countByEsGrave(true);
 
-        // se traen todos los reportes de una vez
-        // se reutilizan en todos los calculos
-        List<ReporteAdverso> todosLosReportes = reporteAdversoRepository.getAll();
-        long totalReportes = todosLosReportes.size();
+        // MySQL filtra por mes y año — no viajan registros a Java
+        long reportesEsteMes = reporteAdversoRepository.countByMesYAnio(
+                LocalDate.now().getMonthValue(),
+                LocalDate.now().getYear()
+        );
 
-        // se filtra por mes y ano actual en Java, esto se tiene que optimizar
-        int mesActual = LocalDate.now().getMonthValue();
-        int anioActual = LocalDate.now().getYear();
-        long reportesEsteMes = todosLosReportes.stream()
-                .filter(r -> r.getFechaReporte() != null
-                        && r.getFechaReporte().getMonthValue() == mesActual
-                        && r.getFechaReporte().getYear() == anioActual)
-                .count();
-
-        // reportes graves, usamos el metodo ya existente en el repo
-        long totalReportesGraves = reporteAdversoRepository.getByEsGrave(true).size();
-
-
+        // Porcentaje calculado en Java con los números que ya tenemos
         double porcentaje = totalReportes > 0
                 ? Math.round((totalReportesGraves * 100.0 / totalReportes) * 10.0) / 10.0
                 : 0.0;
