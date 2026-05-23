@@ -2,7 +2,6 @@ package com.farmacov.api;
 
 import com.farmacov.application.dto.KpisDashboardDto;
 import com.farmacov.application.usecase.ObtenerKpisDashboardUseCase;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
