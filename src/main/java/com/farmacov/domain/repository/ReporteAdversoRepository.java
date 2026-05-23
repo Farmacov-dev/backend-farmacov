@@ -16,4 +16,14 @@ public interface ReporteAdversoRepository {
     Optional<LocalDateTime> findFechaUltimaActualizacion();
     IndiceSeguridadDto getIndiceSeguridad(Integer idVacuna);
     List<IndiceSeguridadDto> getAllIndiceSeguridad();
+
+
+    // optimizacion: cambo de getAll y getEsGrave por los siguientes metodos:
+    long countAll();
+    long countByEsGrave(boolean esGrave);
+    long countByMesYAnio(int mes, int anio);
+
+
+
+
 }
