@@ -5,26 +5,32 @@ import java.math.BigDecimal;
 
 public class VacunaCatalogoResponseDto {
 
-    private Integer idVacuna;
-    private String  nombre;
-    private String  farmaceutica;
+    private Integer    idVacuna;
+    private String     nombre;
+    private String     farmaceutica;
     private BigDecimal costoUnitario;
     private BigDecimal temperatura;
     private BigDecimal tiempoAmbiente;
-    private BigDecimal efectividad;     // calculada en el use case (lógica pendiente de definir)
+    private BigDecimal efectividad;      // calculada en el use case (lógica pendiente de definir)
+    private Double     indiceSeguridad;  // calculado vía vista_indice_seguridad / sp_indice_seguridad
 
     public VacunaCatalogoResponseDto() {}
 
     // factory — convierte modelo de dominio al dto liviano del catálogo
-    public static VacunaCatalogoResponseDto fromDomain(Vacuna vacuna, BigDecimal efectividad) {
+    // efectividad     → null hasta que se defina la lógica de cálculo
+    // indiceSeguridad → porcentaje 0-100 proveniente de la vista / SP (null si no hay reportes aún)
+    public static VacunaCatalogoResponseDto fromDomain(Vacuna vacuna,
+                                                       BigDecimal efectividad,
+                                                       Double indiceSeguridad) {
         VacunaCatalogoResponseDto dto = new VacunaCatalogoResponseDto();
-        dto.idVacuna      = vacuna.getIdVacuna();
-        dto.nombre        = vacuna.getNombre();
-        dto.farmaceutica  = vacuna.getFarmaceutica();
-        dto.costoUnitario = vacuna.getCostoUnitario();
-        dto.temperatura   = vacuna.getTemperatura();
-        dto.tiempoAmbiente = vacuna.getTiempoAmbiente();
-        dto.efectividad   = efectividad;
+        dto.idVacuna        = vacuna.getIdVacuna();
+        dto.nombre          = vacuna.getNombre();
+        dto.farmaceutica    = vacuna.getFarmaceutica();
+        dto.costoUnitario   = vacuna.getCostoUnitario();
+        dto.temperatura     = vacuna.getTemperatura();
+        dto.tiempoAmbiente  = vacuna.getTiempoAmbiente();
+        dto.efectividad     = efectividad;
+        dto.indiceSeguridad = indiceSeguridad;
         return dto;
     }
 
@@ -82,5 +88,13 @@ public class VacunaCatalogoResponseDto {
 
     public void setEfectividad(BigDecimal efectividad) {
         this.efectividad = efectividad;
+    }
+
+    public Double getIndiceSeguridad() {
+        return indiceSeguridad;
+    }
+
+    public void setIndiceSeguridad(Double indiceSeguridad) {
+        this.indiceSeguridad = indiceSeguridad;
     }
 }
