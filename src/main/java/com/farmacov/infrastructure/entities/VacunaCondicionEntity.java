@@ -33,7 +33,9 @@ public class VacunaCondicionEntity {
     // DECIMAL(5,1) sin NOT NULL — puede llegar null desde la base de datos.
     // nullable = true es el default pero lo dejamos explícito para que sea
     // claro que es intencional y no un olvido.
-    @Column(nullable = true, precision = 5, scale = 1)
+    // name es obligatorio: sin él Hibernate busca la columna por el nombre
+    // literal del campo ("tiempoAmbiente") en lugar de "tiempo_ambiente".
+    @Column(name = "tiempo_ambiente", nullable = true, precision = 5, scale = 1)
     private BigDecimal tiempoAmbiente;
 
     // updatable = false — refleja que creado_en no tiene ON UPDATE en el schema.
