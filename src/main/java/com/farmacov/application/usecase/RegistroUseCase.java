@@ -54,6 +54,7 @@ public class RegistroUseCase {
         nuevo.setApellidoMaterno(dto.getApellidoMaterno());
         nuevo.setCorreo(dto.getCorreo());
         nuevo.setDepartamento(dto.getDepartamento());
+        nuevo.setEstado("ACTIVO");
         nuevo.setRol(rol);
         nuevo.setCreadoEn(LocalDateTime.now());
         nuevo.setActualizadoEn(LocalDateTime.now());

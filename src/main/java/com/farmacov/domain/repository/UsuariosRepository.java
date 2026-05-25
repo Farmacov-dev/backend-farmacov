@@ -11,4 +11,5 @@ public interface UsuariosRepository {
     Optional<Usuarios> findUsuarioByFirebaseUuid(String firebaseUuid); // busca por uuid de firebase
     Optional<Usuarios> findUsuarioByCorreo(String correo); // busca por correo
     Usuarios saveUsuario(Usuarios usuario); // guarda el usuario y lo devuelve
+    long countByEstado(String estado);
 }

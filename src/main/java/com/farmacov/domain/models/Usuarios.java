@@ -14,6 +14,7 @@ public class Usuarios {
     private String correo;
     private Roles rol;
     private String departamento;
+    private String estado;
     private LocalDateTime creadoEn;
     private LocalDateTime actualizadoEn;
 
@@ -57,6 +58,10 @@ public class Usuarios {
         return departamento;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
     public LocalDateTime getCreadoEn() {
         return creadoEn;
     }
@@ -97,6 +102,10 @@ public class Usuarios {
 
     public void setDepartamento(String departamento) {
         this.departamento = departamento;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public void setCreadoEn(LocalDateTime creadoEn) {

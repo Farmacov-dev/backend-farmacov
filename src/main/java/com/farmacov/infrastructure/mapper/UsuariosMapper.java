@@ -16,6 +16,7 @@ public class UsuariosMapper {
         usuario.setCorreo(entity.getCorreo());
         usuario.setRol(entity.getRol() != null ? RolesMapper.toDomain(entity.getRol()) : null);
         usuario.setDepartamento(entity.getDepartamento());
+        usuario.setEstado(entity.getEstado());
         usuario.setCreadoEn(entity.getCreadoEn());
         usuario.setActualizadoEn(entity.getActualizadoEn());
         return usuario;
@@ -31,6 +32,7 @@ public class UsuariosMapper {
         entity.setCorreo(usuario.getCorreo());
         //entity.setRol(RolesMapper.toEntity(usuario.getRol()));
         entity.setDepartamento(usuario.getDepartamento());
+        entity.setEstado(usuario.getEstado());
         entity.setCreadoEn(usuario.getCreadoEn());
         entity.setActualizadoEn(usuario.getActualizadoEn());
         return entity;
