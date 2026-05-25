@@ -12,6 +12,7 @@ public class VacunaCatalogoResponseDto {
     private BigDecimal temperatura;
     private BigDecimal tiempoAmbiente;
     private BigDecimal efectividad;     // calculada en el use case (lógica pendiente de definir)
+    private Integer idFarmaco;
 
     public VacunaCatalogoResponseDto() {}
 
@@ -25,6 +26,7 @@ public class VacunaCatalogoResponseDto {
         dto.temperatura   = vacuna.getTemperatura();
         dto.tiempoAmbiente = vacuna.getTiempoAmbiente();
         dto.efectividad   = efectividad;
+        dto.idFarmaco = vacuna.getIdFarmaco();
         return dto;
     }
 
@@ -56,6 +58,8 @@ public class VacunaCatalogoResponseDto {
         return efectividad;
     }
 
+    public Integer getIdFarmaco() { return  idFarmaco; }
+
     public void setIdVacuna(Integer idVacuna) {
         this.idVacuna = idVacuna;
     }
@@ -79,6 +83,8 @@ public class VacunaCatalogoResponseDto {
     public void setTiempoAmbiente(BigDecimal tiempoAmbiente) {
         this.tiempoAmbiente = tiempoAmbiente;
     }
+
+    public void setIdFarmaco(Integer idFarmaco) { this.idFarmaco = idFarmaco; }
 
     public void setEfectividad(BigDecimal efectividad) {
         this.efectividad = efectividad;

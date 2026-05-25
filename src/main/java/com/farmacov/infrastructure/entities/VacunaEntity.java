@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import com.farmacov.infrastructure.entities.FarmacoEntity;
 
 @Entity
 @Table(name = "vacunas")
@@ -43,6 +44,10 @@ public class VacunaEntity {
 
     @OneToMany(mappedBy = "vacuna", fetch = FetchType.LAZY)
     private List<SintomaGraveEntity> sintomasGraves;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_farmaco", nullable = false)
+    private FarmacoEntity farmaco;
 
     // C
     public VacunaEntity() {}
@@ -92,6 +97,8 @@ public class VacunaEntity {
         return sintomasGraves;
     }
 
+    public FarmacoEntity getFarmaco() {return farmaco;}
+
     // S
     public void setId(Integer id) {
         this.id = id;
@@ -136,4 +143,6 @@ public class VacunaEntity {
     public void setSintomasGraves(List<SintomaGraveEntity> sintomasGraves) {
         this.sintomasGraves = sintomasGraves;
     }
+
+    public void setFarmaco(FarmacoEntity farmaco) {this.farmaco = farmaco;}
 }

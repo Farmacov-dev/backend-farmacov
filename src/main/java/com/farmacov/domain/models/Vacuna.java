@@ -25,6 +25,11 @@ public class Vacuna {
     // Atributos de efectos_secundarios — lista completa
     private List<EfectoSecundario> efectosSecundarios;
 
+
+    // Atributos de farmaco
+    private Integer idFarmaco;
+    private String nombreFarmaco;
+
     // C
     public Vacuna() {}
 
@@ -73,6 +78,14 @@ public class Vacuna {
         return efectosSecundarios;
     }
 
+    public Integer getIdFarmaco() {
+        return idFarmaco;
+    }
+
+    public String getNombreFarmaco() {
+        return nombreFarmaco;
+    }
+
     // S
     public void setIdVacuna(Integer idVacuna) {
         this.idVacuna = idVacuna;
@@ -116,5 +129,13 @@ public class Vacuna {
 
     public void setEfectosSecundarios(List<EfectoSecundario> efectosSecundarios) {
         this.efectosSecundarios = efectosSecundarios;
+    }
+
+    public void setIdFarmaco(Integer idFarmaco) {
+        this.idFarmaco = idFarmaco;
+    }
+
+    public void setNombreFarmaco(String nombreFarmaco) {
+        this.nombreFarmaco = nombreFarmaco;
     }
 }

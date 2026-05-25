@@ -5,6 +5,7 @@ import com.farmacov.domain.models.EfectoSecundario;
 import com.farmacov.domain.models.EfectoSecundario.Severidad;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface EfectoSecundarioRepository {
@@ -29,4 +30,10 @@ public interface EfectoSecundarioRepository {
 
     // Elimina un efecto secundario por su ID
     void deleteEfectoById(Integer id);
+
+    // cuenta efectos secundarios por severidad para una vacuna
+    // para distribucion en comparaciones y graficas
+    Map<String, Long> countBySeveridadForVacuna(Integer idVacuna);
+
+    Map<String, Long> countBySeveridadGlobal();
 }

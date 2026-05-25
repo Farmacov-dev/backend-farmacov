@@ -32,7 +32,12 @@ public class AuthFilter implements ContainerRequestFilter {
             "/admin/",
             "/admin/roles/",
             "/auth/me",
-            "/dashboard/kpis"
+            "/dashboard/kpis",
+            "/vacunas",
+            "/dashboard/efectos-secundarios",
+            "/distribucion-severidad",
+            "/admin/farmacos",
+            "/admin/importar"
     );
 
     // adicion para rutas que solo admins pueden usar

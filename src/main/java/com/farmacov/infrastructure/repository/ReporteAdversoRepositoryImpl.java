@@ -107,7 +107,7 @@ public class ReporteAdversoRepositoryImpl
                 ((Number) r[0]).intValue(),
                 (String)  r[1],
                 ((Number) r[2]).longValue(),
-                ((Number) r[3]).longValue(),
+                r[3] != null ? ((Number) r[3]).longValue() : 0L,
                 r[4] != null ? ((Number) r[4]).doubleValue() : null
         )).toList();
     }
@@ -141,9 +141,11 @@ public class ReporteAdversoRepositoryImpl
 
 
 
-
-
-
+    @Override
+    @Transactional
+    public long countByIdSintoma(Integer idSintoma) {
+        return count("idSintoma", idSintoma);
+    }
 
 
 }

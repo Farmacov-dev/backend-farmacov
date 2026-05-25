@@ -46,6 +46,29 @@ public class RolesRepositoryImpl implements RolesRepository, PanacheRepositoryBa
         return RolesMapper.toDomain(actualizado);
     }
 
+    @Transactional
+    @Override
+    public void deleteRole(Integer id) {
+        // Verificamos que no haya usuarios con este rol antes de eliminar
+        // Si hay usuarios, MySQL lanzaría FK violation — mejor manejarlo aquí
+        long usuariosConEsteRol = getEntityManager()
+                .createQuery(
+                        "SELECT COUNT(u) FROM UsuariosEntity u WHERE u.rol.id = :id",
+                        Long.class)
+                .setParameter("id", id)
+                .getSingleResult();
+
+        if (usuariosConEsteRol > 0) {
+            throw new jakarta.ws.rs.BadRequestException(
+                    "No se puede eliminar el rol — tiene " + usuariosConEsteRol + " usuario(s) asignado(s)"
+            );
+        }
+
+        deleteById(id);
+    }
+
+
+
 
 
 }

@@ -13,8 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 // @ApplicationScoped — un solo instance de este repositorio vive
 // durante toda la aplicación. Quarkus lo inyecta donde se necesite con @Inject.
@@ -102,4 +101,58 @@ public class EfectoSecundarioRepositoryImpl
         // se llama deleteEfectoById
         deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public Map<String, Long> countBySeveridadForVacuna(Integer idVacuna) {
+        List<Object[]> rows = getEntityManager()
+                .createQuery(
+                        "SELECT e.severidad, COUNT(e) FROM EfectoSecundarioEntity e " +
+                                "WHERE e.vacuna.id = :idVacuna " +
+                                "GROUP BY e.severidad",
+                        Object[].class)
+                .setParameter("idVacuna", idVacuna)
+                .getResultList();
+
+        Map<String, Long> distribucion = new LinkedHashMap<>();
+        distribucion.put("leve", 0L);
+        distribucion.put("moderado", 0L);
+        distribucion.put("grave", 0L);
+
+        for (Object[] row : rows) {
+            EfectoSecundarioEntity.Severidad severidad =
+                    (EfectoSecundarioEntity.Severidad) row[0];
+            Long total = (Long) row[1];
+            distribucion.put(severidad.name(), total);
+        }
+
+        return distribucion;
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Long> countBySeveridadGlobal() {
+        List<Object[]> rows = getEntityManager()
+                .createQuery(
+                        "SELECT e.severidad, COUNT(e) FROM EfectoSecundarioEntity e " +
+                                "GROUP BY e.severidad",
+                        Object[].class)
+                .getResultList();
+
+        Map<String, Long> distribucion = new LinkedHashMap<>();
+        distribucion.put("leve", 0L);
+        distribucion.put("moderado", 0L);
+        distribucion.put("grave", 0L);
+
+        for (Object[] row : rows) {
+            EfectoSecundarioEntity.Severidad severidad =
+                    (EfectoSecundarioEntity.Severidad) row[0];
+            Long total = (Long) row[1];
+            distribucion.put(severidad.name(), total);
+        }
+
+        return distribucion;
+    }
+
+
 }

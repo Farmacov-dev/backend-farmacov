@@ -8,4 +8,5 @@ public interface RolesRepository {
     Optional<Roles> findRoleById(Integer id); // busca uno por id
     Roles saveRole(Roles rol); // guarda el rol y lo devuelve
     Roles updateRole(Roles rol);
+    void deleteRole(Integer id);
 }
