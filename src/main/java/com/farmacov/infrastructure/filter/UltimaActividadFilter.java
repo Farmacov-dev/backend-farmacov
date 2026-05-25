@@ -1,3 +1,4 @@
+/*
 package com.farmacov.infrastructure.filter;
 
 import com.farmacov.application.usecase.ActualizarUltimaActividadUseCase;
@@ -62,3 +63,4 @@ public class UltimaActividadFilter implements ContainerResponseFilter {
         return "/" + path;
     }
 }
+*/

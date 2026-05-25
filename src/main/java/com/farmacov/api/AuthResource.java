@@ -54,7 +54,7 @@ public class AuthResource {
     }
 
     // GET /auth/me
-    // si el usuario hace refersh
+    // si el usuario hace refresh
     // se guarda el uuid en el contexto
     @GET
     @Path("/me")
@@ -71,7 +71,9 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response registro(@Valid RegistroDto dto) {
-        UsuarioResponseDto usuario = registroUseCase.execute(dto);
+        // idAdmin es null porque /auth/registro es una ruta pública sin token.
+        // RegistroUseCase usa el UUID del propio usuario creado como actor del log.
+        UsuarioResponseDto usuario = registroUseCase.execute(dto, null);
         return Response.status(201).entity(usuario).build();
     }
 }
