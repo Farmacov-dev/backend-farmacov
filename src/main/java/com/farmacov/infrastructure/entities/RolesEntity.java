@@ -1,10 +1,8 @@
 package com.farmacov.infrastructure.entities;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.farmacov.infrastructure.config.PermisosConverter;
+import jakarta.persistence.*;
+
+import java.util.Map;
 
 @Entity
 @Table(name = "roles")
@@ -19,6 +17,11 @@ public class RolesEntity {
 
     @Column(name = "es_admin", nullable = false)
     private boolean esAdmin;
+
+    // adicion para toggles de permisos
+    @Convert(converter = PermisosConverter.class)
+    @Column(name = "permisos", columnDefinition = "JSON")
+    private Map<String, Boolean> permisos;
 
     // C
 
@@ -37,6 +40,9 @@ public class RolesEntity {
         return esAdmin;
     }
 
+    // adicion para toggles de permisos
+    public Map<String, Boolean> getPermisos() {return permisos;}
+
     // S
     public void setId(Integer id) {
         this.id = id;
@@ -49,4 +55,7 @@ public class RolesEntity {
     public void setEsAdmin(boolean esAdmin) {
         this.esAdmin = esAdmin;
     }
+
+    // adicion para toggles de permisos
+    public void setPermisos(Map<String, Boolean> permisos) {this.permisos = permisos;}
 }

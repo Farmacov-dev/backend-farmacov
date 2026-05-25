@@ -14,7 +14,17 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.validation.Valid;
 
+///  imports de documentacio
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+
 @Path("/auth")
+@Tag(name = "Autenticacion", description = "autenticacion y registro de usuario via un metodo externo (Ej. Firebase, auth0")
 @ApplicationScoped
 public class AuthResource {
 
@@ -44,7 +54,7 @@ public class AuthResource {
     }
 
     // GET /auth/me
-    // si el usuario hace refersh
+    // si el usuario hace refresh
     // se guarda el uuid en el contexto
     @GET
     @Path("/me")
@@ -61,7 +71,9 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response registro(@Valid RegistroDto dto) {
-        UsuarioResponseDto usuario = registroUseCase.execute(dto);
+        // idAdmin es null porque /auth/registro es una ruta pública sin token.
+        // RegistroUseCase usa el UUID del propio usuario creado como actor del log.
+        UsuarioResponseDto usuario = registroUseCase.execute(dto, null);
         return Response.status(201).entity(usuario).build();
     }
 }
