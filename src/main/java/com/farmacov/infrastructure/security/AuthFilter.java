@@ -32,7 +32,8 @@ public class AuthFilter implements ContainerRequestFilter {
             "/admin/",
             "/admin/roles/",
             "/auth/me",
-            "/vacunas"
+            "/vacunas",
+            "/bitacora"   // TODO: restringir a admins antes de producción
     );
 
     // adicion para rutas que solo admins pueden usar
