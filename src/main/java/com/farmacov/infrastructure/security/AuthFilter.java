@@ -34,7 +34,7 @@ public class AuthFilter implements ContainerRequestFilter {
             "/dashboard/efectos-secundarios",
             "/distribucion-severidad",
             "/admin/farmacos",
-            "/admin/importar"
+            "/admin/importar",
             "/bitacora",   // TODO: restringir a admins antes de producción
             "/roles"       // catálogo de roles para selector de edición de usuario
     );
