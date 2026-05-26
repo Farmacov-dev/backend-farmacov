@@ -16,6 +16,7 @@ public class VacunaDetalleResponseDto {
     private String nombre;
     private String farmaceutica;
     private String tipo;
+    private String descripcionGeneral;
 
     // A — vacuna_condiciones
     private BigDecimal temperatura;
@@ -41,9 +42,10 @@ public class VacunaDetalleResponseDto {
     public static VacunaDetalleResponseDto fromDomain(Vacuna vacuna) {
         VacunaDetalleResponseDto dto = new VacunaDetalleResponseDto();
 
-        dto.nombre        = vacuna.getNombre();
-        dto.farmaceutica  = vacuna.getFarmaceutica();
-        dto.tipo          = vacuna.getTipo();
+        dto.nombre              = vacuna.getNombre();
+        dto.farmaceutica        = vacuna.getFarmaceutica();
+        dto.descripcionGeneral  = vacuna.getDescripcionGeneral();
+        dto.tipo                = vacuna.getTipo();
         dto.temperatura   = vacuna.getTemperatura();
         dto.tiempoAmbiente = vacuna.getTiempoAmbiente();
 
@@ -72,6 +74,9 @@ public class VacunaDetalleResponseDto {
         return tipo;
     }
 
+    public String getDescripcionGeneral() {
+        return descripcionGeneral;
+    }
     public BigDecimal getTemperatura() {
         return temperatura;
     }
@@ -103,6 +108,10 @@ public class VacunaDetalleResponseDto {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public void setDescripcionGeneral(String descripcionGeneral) {
+        this.descripcionGeneral = descripcionGeneral;
     }
 
     public void setTemperatura(BigDecimal temperatura) {

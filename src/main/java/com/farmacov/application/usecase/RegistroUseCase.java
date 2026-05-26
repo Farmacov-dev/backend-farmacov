@@ -3,6 +3,7 @@ package com.farmacov.application.usecase;
 import com.farmacov.application.dto.RegistroDto;
 import com.farmacov.application.dto.UsuarioResponseDto;
 import com.farmacov.domain.auth.IdentityProvider;
+import com.farmacov.domain.models.Bitacora;
 import com.farmacov.domain.models.Roles;
 import com.farmacov.domain.models.Usuarios;
 import com.farmacov.domain.repository.RolesRepository;
@@ -27,8 +28,11 @@ public class RegistroUseCase {
     @Inject
     RolesRepository rolesRepository;
 
+    @Inject
+    RegistrarBitacoraUseCase registrarBitacoraUseCase;
+
     @Transactional
-    public UsuarioResponseDto execute(RegistroDto dto) {
+    public UsuarioResponseDto execute(RegistroDto dto, UUID idAdmin) {
         // 1. Verificamos que el rol existe antes de hacer nada
         Roles rol = rolesRepository.findRoleById(dto.getIdRol())
                 .orElseThrow(() -> new NotFoundException(
@@ -56,7 +60,9 @@ public class RegistroUseCase {
 
         Usuarios guardado = usuariosRepository.saveUsuario(nuevo);
 
-        // 4. Devolvemos los datos del usuario creado
+        UUID actorId = (idAdmin != null) ? idAdmin : guardado.getId();
+        registrarBitacoraUseCase.execute(actorId, Bitacora.AccionEnum.CREATE, guardado.getId());
+
         UsuarioResponseDto response = new UsuarioResponseDto();
         response.setEmail(guardado.getCorreo());
         response.setNombre(guardado.getNombre());

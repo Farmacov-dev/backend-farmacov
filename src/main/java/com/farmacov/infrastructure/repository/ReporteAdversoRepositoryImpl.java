@@ -1,6 +1,6 @@
 package com.farmacov.infrastructure.repository;
 
-import com.farmacov.application.dto.IndiceSeguridadDto;
+import com.farmacov.domain.models.IndiceSeguridadResult;
 import com.farmacov.domain.models.ReporteAdverso;
 import com.farmacov.domain.repository.ReporteAdversoRepository;
 import com.farmacov.infrastructure.entities.ReporteAdversoEntity;
@@ -12,7 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.transaction.Transactional;
 
@@ -80,35 +79,47 @@ public class ReporteAdversoRepositoryImpl
                 .findFirst();
     }
 
+    // -------------------------------------------------------------------------
+    // sp_indice_seguridad — para una vacuna específica
+    // OUT p_indice es DECIMAL(5,2) en MySQL → el driver lo entrega como
+    // BigDecimal, por eso registramos BigDecimal.class en lugar de Double.
+    // El use case decidirá cómo convertirlo para el DTO de respuesta.
+    // -------------------------------------------------------------------------
     @Override
-    public IndiceSeguridadDto getIndiceSeguridad(Integer idVacuna) {
+    public IndiceSeguridadResult getIndiceSeguridad(Integer idVacuna) {
         StoredProcedureQuery q = em.createStoredProcedureQuery("sp_indice_seguridad");
-        q.registerStoredProcedureParameter("p_id_vacuna", Integer.class, ParameterMode.IN);
-        q.registerStoredProcedureParameter("p_total",     Long.class,    ParameterMode.OUT);
-        q.registerStoredProcedureParameter("p_graves",    Long.class,    ParameterMode.OUT);
-        q.registerStoredProcedureParameter("p_indice",    Double.class,  ParameterMode.OUT);
+        q.registerStoredProcedureParameter("p_id_vacuna", Integer.class,    ParameterMode.IN);
+        q.registerStoredProcedureParameter("p_total",     Long.class,       ParameterMode.OUT);
+        q.registerStoredProcedureParameter("p_graves",    Long.class,       ParameterMode.OUT);
+        q.registerStoredProcedureParameter("p_indice",    java.math.BigDecimal.class, ParameterMode.OUT);
         q.setParameter("p_id_vacuna", idVacuna);
         q.execute();
-        return new IndiceSeguridadDto(
-                idVacuna, null,
-                (Long)   q.getOutputParameterValue("p_total"),
-                (Long)   q.getOutputParameterValue("p_graves"),
-                (Double) q.getOutputParameterValue("p_indice")
-        );
+
+        Long   total  = (Long)                  q.getOutputParameterValue("p_total");
+        Long   graves = (Long)                  q.getOutputParameterValue("p_graves");
+        java.math.BigDecimal indice = (java.math.BigDecimal) q.getOutputParameterValue("p_indice");
+
+        return new IndiceSeguridadResult(idVacuna, null, total, graves, indice);
     }
 
+    // -------------------------------------------------------------------------
+    // vista_indice_seguridad — todos los índices de una vez
+    // -------------------------------------------------------------------------
     @Override
     @SuppressWarnings("unchecked")
-    public List<IndiceSeguridadDto> getAllIndiceSeguridad() {
+    public List<IndiceSeguridadResult> getAllIndiceSeguridad() {
         List<Object[]> rows = em
-                .createNativeQuery("SELECT id_vacuna, nombre_vacuna, total_reportes, reportes_graves, indice_seguridad FROM vista_indice_seguridad")
+                .createNativeQuery(
+                        "SELECT id_vacuna, nombre_vacuna, total_reportes, reportes_graves, indice_seguridad " +
+                        "FROM vista_indice_seguridad")
                 .getResultList();
-        return rows.stream().map(r -> new IndiceSeguridadDto(
+
+        return rows.stream().map(r -> new IndiceSeguridadResult(
                 ((Number) r[0]).intValue(),
                 (String)  r[1],
                 ((Number) r[2]).longValue(),
                 r[3] != null ? ((Number) r[3]).longValue() : 0L,
-                r[4] != null ? ((Number) r[4]).doubleValue() : null
+                r[4] != null ? java.math.BigDecimal.valueOf(((Number) r[4]).doubleValue()) : null
         )).toList();
     }
 
