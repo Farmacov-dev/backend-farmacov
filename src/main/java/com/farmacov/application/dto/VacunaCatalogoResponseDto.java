@@ -11,7 +11,8 @@ public class VacunaCatalogoResponseDto {
     private BigDecimal costoUnitario;
     private BigDecimal temperatura;
     private BigDecimal tiempoAmbiente;
-    private BigDecimal efectividad;      // calculada en el use case (lógica pendiente de definir)
+    private BigDecimal efectividad;     // calculada en el use case (lógica pendiente de definir)
+    private Integer idFarmaco;
     private Double     indiceSeguridad;  // calculado vía vista_indice_seguridad / sp_indice_seguridad
 
     public VacunaCatalogoResponseDto() {}
@@ -23,13 +24,14 @@ public class VacunaCatalogoResponseDto {
                                                        BigDecimal efectividad,
                                                        Double indiceSeguridad) {
         VacunaCatalogoResponseDto dto = new VacunaCatalogoResponseDto();
-        dto.idVacuna        = vacuna.getIdVacuna();
-        dto.nombre          = vacuna.getNombre();
-        dto.farmaceutica    = vacuna.getFarmaceutica();
-        dto.costoUnitario   = vacuna.getCostoUnitario();
-        dto.temperatura     = vacuna.getTemperatura();
-        dto.tiempoAmbiente  = vacuna.getTiempoAmbiente();
-        dto.efectividad     = efectividad;
+        dto.idVacuna      = vacuna.getIdVacuna();
+        dto.nombre        = vacuna.getNombre();
+        dto.farmaceutica  = vacuna.getFarmaceutica();
+        dto.costoUnitario = vacuna.getCostoUnitario();
+        dto.temperatura   = vacuna.getTemperatura();
+        dto.tiempoAmbiente = vacuna.getTiempoAmbiente();
+        dto.efectividad   = efectividad;
+        dto.idFarmaco = vacuna.getIdFarmaco();
         dto.indiceSeguridad = indiceSeguridad;
         return dto;
     }
@@ -62,6 +64,8 @@ public class VacunaCatalogoResponseDto {
         return efectividad;
     }
 
+    public Integer getIdFarmaco() { return  idFarmaco; }
+
     public void setIdVacuna(Integer idVacuna) {
         this.idVacuna = idVacuna;
     }
@@ -85,6 +89,8 @@ public class VacunaCatalogoResponseDto {
     public void setTiempoAmbiente(BigDecimal tiempoAmbiente) {
         this.tiempoAmbiente = tiempoAmbiente;
     }
+
+    public void setIdFarmaco(Integer idFarmaco) { this.idFarmaco = idFarmaco; }
 
     public void setEfectividad(BigDecimal efectividad) {
         this.efectividad = efectividad;

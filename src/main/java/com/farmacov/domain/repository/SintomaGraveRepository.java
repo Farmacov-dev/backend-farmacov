@@ -10,4 +10,11 @@ public interface SintomaGraveRepository {
     SintomaGrave save(SintomaGrave sintomaGrave);
     Optional<SintomaGrave> getById(Integer id);
     List<SintomaGrave> getAll();
+
+    List<SintomaGrave> findByIdVacuna(Integer vacuna);
+
+    SintomaGrave update(SintomaGrave sintomaGrave);
+
+    void deleteSintomaById(Integer id);
+
 }

@@ -10,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,4 +46,36 @@ public class SintomaGraveRepositoryImpl implements
                 .map(SintomaGraveMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public List<SintomaGrave> findByIdVacuna(Integer idVacuna) {
+        return find("vacuna.id", idVacuna)
+                .stream()
+                .map(SintomaGraveMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public SintomaGrave update(SintomaGrave sintomaGrave) {
+        SintomaGraveEntity entity = findByIdOptional(sintomaGrave.getId())
+                .orElseThrow(() -> new NotFoundException(
+                        "SintomaGrave con id " + sintomaGrave.getId() + " no encontrado"
+                ));
+
+        // Solo actualizamos el nombre — la vacuna no cambia
+        entity.setNombre(sintomaGrave.getNombre());
+
+        return SintomaGraveMapper.toDomain(entity);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSintomaById(Integer id) {
+        deleteById(id);
+    }
+
+
+
 }

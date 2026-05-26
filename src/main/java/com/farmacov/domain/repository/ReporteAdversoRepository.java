@@ -23,4 +23,9 @@ public interface ReporteAdversoRepository {
     long countAll();
     long countByEsGrave(boolean esGrave);
     long countByMesYAnio(int mes, int anio);
+    long countByIdSintoma(Integer idSintoma);
+
+
+
+
 }
