@@ -47,6 +47,11 @@ public class UsuariosRepositoryImpl implements UsuariosRepository, PanacheReposi
                 .map(UsuariosMapper::toDomain);
     }
 
+    @Override
+    public long countByEstado(String estado) {
+        return count("estado", estado);
+    }
+
     @Transactional
     @Override
     public Usuarios saveUsuario(Usuarios usuario) {

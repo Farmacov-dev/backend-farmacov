@@ -43,6 +43,9 @@ public class UsuariosEntity {
     @Column(nullable = false, length = 100)
     private String departamento;
 
+    @Column(nullable = false, length = 20)
+    private String estado;
+
     @Column(name = "creado_en", nullable = false)
     private LocalDateTime creadoEn;
 
@@ -88,6 +91,10 @@ public class UsuariosEntity {
         return departamento;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
     public LocalDateTime getCreadoEn() {
         return creadoEn;
     }
@@ -127,6 +134,10 @@ public class UsuariosEntity {
 
     public void setDepartamento(String departamento) {
         this.departamento = departamento;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public void setCreadoEn(LocalDateTime creadoEn) {
