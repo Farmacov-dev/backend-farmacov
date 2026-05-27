@@ -2,9 +2,11 @@ package com.farmacov.infrastructure.mapper;
 
 import com.farmacov.domain.models.EfectoSecundario;
 import com.farmacov.domain.models.Vacuna;
+import com.farmacov.domain.models.Farmaco;
 import com.farmacov.infrastructure.entities.VacunaCondicionEntity;
 import com.farmacov.infrastructure.entities.VacunaCostoEntity;
 import com.farmacov.infrastructure.entities.VacunaEntity;
+import com.farmacov.infrastructure.entities.FarmacoEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +62,12 @@ public class VacunaMapper {
                 : Collections.emptyList();
 
         vacuna.setEfectosSecundarios(efectos);
+
+        if (entity.getFarmaco() != null) {
+            vacuna.setIdFarmaco(entity.getFarmaco().getId());
+            vacuna.setNombreFarmaco(entity.getFarmaco().getNombre());
+        }
+
 
         return vacuna;
     }

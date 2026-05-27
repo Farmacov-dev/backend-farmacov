@@ -5,9 +5,11 @@ import com.farmacov.application.dto.CrearEfectoSecundarioDto;
 import com.farmacov.domain.models.EfectoSecundario;
 import com.farmacov.domain.models.EfectoSecundario.Severidad;
 import com.farmacov.domain.repository.EfectoSecundarioRepository;
+import com.farmacov.domain.repository.ReporteAdversoRepository;
 import com.farmacov.domain.repository.VacunaRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
@@ -20,6 +22,9 @@ public class EfectoSecundarioUseCase {
 
     @Inject
     VacunaRepository vacunaRepository;
+
+    @Inject
+    ReporteAdversoRepository reporteAdversoRepository;
 
     public EfectoSecundario crear(CrearEfectoSecundarioDto dto) {
         vacunaRepository.findVacunaById(dto.getIdVacuna())
@@ -75,10 +80,19 @@ public class EfectoSecundarioUseCase {
     }
 
     public void eliminar(Integer id) {
+        // Verificar que existe
         efectoSecundarioRepository.findEfectoById(id)
                 .orElseThrow(() -> new NotFoundException(
                         "EfectoSecundario con id " + id + " no encontrado"
                 ));
+
+        // Verificar que no tiene reportes adversos asociados
+        long reportes = reporteAdversoRepository.countByIdSintoma(id);
+        if (reportes > 0) {
+            throw new BadRequestException(
+                    "No se puede eliminar — tiene " + reportes + " reporte(s) adverso(s) asociado(s)"
+            );
+        }
 
         efectoSecundarioRepository.deleteEfectoById(id);
     }

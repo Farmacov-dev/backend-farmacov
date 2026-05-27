@@ -11,14 +11,11 @@ import jakarta.ws.rs.ext.Provider;
 
 import com.farmacov.domain.models.Usuarios;
 import com.farmacov.domain.repository.UsuariosRepository;
-
-
 import java.util.Set;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthFilter implements ContainerRequestFilter {
-
     // aqi van las rutas que no requieren token
     //auth/registro  es temporal aqui para pruebas
     private static final Set<String> PUBLIC_PATHS = Set.of(
@@ -32,19 +29,22 @@ public class AuthFilter implements ContainerRequestFilter {
             "/admin/",
             "/admin/roles/",
             "/auth/me",
+            "/dashboard/kpis",
             "/vacunas",
-            "/bitacora"   // TODO: restringir a admins antes de producción
+            "/dashboard/efectos-secundarios",
+            "/distribucion-severidad",
+            "/admin/farmacos",
+            "/admin/importar",
+            "/bitacora",   // TODO: restringir a admins antes de producción
+            "/roles"       // catálogo de roles para selector de edición de usuario
     );
-
     // adicion para rutas que solo admins pueden usar
     private static final Set<String> ADMIN_PATHS = Set.of(
            // "/admin/"
-
     );
 
     @Inject
     IdentityProvider identityProvider;
-
     @Inject
     UsuariosRepository usuariosRepository;
 
@@ -56,7 +56,6 @@ public class AuthFilter implements ContainerRequestFilter {
         if (PUBLIC_PATHS.stream().anyMatch(path::startsWith)) {
             return;
         }
-
         String header = ctx.getHeaderString("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {
@@ -70,13 +69,11 @@ public class AuthFilter implements ContainerRequestFilter {
             // Verificamos el token y guardamos el uuid en el contexto, para que se pueda usar el usecase
             String uid = identityProvider.verifyToken(header.substring(7));
             ctx.setProperty("firebase_uid", uid);
-
             // query extra si la ruta es de admin
             if (ADMIN_PATHS.stream().anyMatch(path::startsWith)) {
                 Usuarios usuario = usuariosRepository
                         .findUsuarioByFirebaseUuid(uid)
                         .orElse(null);
-
                 boolean esAdmin = usuario != null
                         && usuario.getRol() != null
                         && Boolean.TRUE.equals(usuario.getRol().getEsAdmin());
@@ -87,8 +84,6 @@ public class AuthFilter implements ContainerRequestFilter {
                             .build());
                 }
             }
-
-
         } catch (Exception e) {
             ctx.abortWith(Response.status(401)
                     .entity("{\"error\": \"Token inválido o usuario inhabilitado\"}")

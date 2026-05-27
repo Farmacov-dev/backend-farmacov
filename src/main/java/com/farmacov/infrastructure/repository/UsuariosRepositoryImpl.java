@@ -8,7 +8,9 @@ import com.farmacov.infrastructure.mapper.UsuariosMapper;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,5 +60,30 @@ public class UsuariosRepositoryImpl implements UsuariosRepository, PanacheReposi
         entity.setRol(rol); // asigna el rol que hibernate ya conoce
         persist(entity); // panache guarda en la db
         return UsuariosMapper.toDomain(entity); // devuelve el usuario guardado como modelo
+    }
+
+    @Transactional // si algo falla , se revierte
+    @Override // cumple contrato
+    public Usuarios updateUsuario(Usuarios usuario) {
+        // usa un metodo de panache para buscar la UUID en la DB
+        UsuariosEntity entity = findByIdOptional(usuario.getId())
+                .orElseThrow(() -> new NotFoundException( // si no existe se lana un 404
+                        "Usuario con id " + usuario.getId() + " no encontrado" // mensaje de fracaso
+                ));
+        // actulizar solo los campos editables, hibernate detecta los cambios + genera el cambio sin uso del persist
+        entity.setDepartamento(usuario.getDepartamento());
+
+        // se usa el getreference para que hibernate use el id para la fk sin cargar el objeto completo de la db
+        entity.setRol(getEntityManager().getReference(RolesEntity.class, usuario.getRol().getId()));
+        entity.setActualizadoEn(LocalDateTime.now());
+
+        return UsuariosMapper.toDomain(entity);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUsuario(UUID id) {
+        // delete es de panache asi que queda en corto
+        deleteById(id);
     }
 }

@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 // DTO para GET /vacunas/{id} — vista de detalle de una vacuna
 // Clase independiente: los campos son distintos a los del catálogo
@@ -21,7 +22,17 @@ public class VacunaDetalleResponseDto {
     private BigDecimal temperatura;
     private BigDecimal tiempoAmbiente;
 
+    // A - vacuna_costos
+    private BigDecimal costoUnitario;
+
+    private Double indiceSeguridad;
+
+    // A — reportes_adversos
+    private Long totalReportes;
+
+
     // A — efectos_secundarios (lista completa de la tabla)
+    private Map<String, Long> distribucionSeveridad;
     private List<EfectoSecundarioDto> efectosSecundarios;
 
     // C
@@ -37,6 +48,8 @@ public class VacunaDetalleResponseDto {
         dto.tipo                = vacuna.getTipo();
         dto.temperatura   = vacuna.getTemperatura();
         dto.tiempoAmbiente = vacuna.getTiempoAmbiente();
+
+        dto.costoUnitario = vacuna.getCostoUnitario();
 
         // convierte cada EfectoSecundario del dominio a su DTO de respuesta
         dto.efectosSecundarios = vacuna.getEfectosSecundarios() != null
@@ -72,6 +85,14 @@ public class VacunaDetalleResponseDto {
         return tiempoAmbiente;
     }
 
+    public BigDecimal getCostoUnitario() { return costoUnitario; }
+
+    public Double getIndiceSeguridad() { return indiceSeguridad;}
+
+    public Long getTotalReportes() { return totalReportes; }
+
+    public Map<String, Long> getDistribucionSeveridad() {return distribucionSeveridad;}
+
     public List<EfectoSecundarioDto> getEfectosSecundarios() {
         return efectosSecundarios;
     }
@@ -99,6 +120,22 @@ public class VacunaDetalleResponseDto {
 
     public void setTiempoAmbiente(BigDecimal tiempoAmbiente) {
         this.tiempoAmbiente = tiempoAmbiente;
+    }
+
+    public void setCostoUnitario(BigDecimal costoUnitario) {
+        this.costoUnitario = costoUnitario;
+    }
+
+    public void setIndiceSeguridad(Double indiceSeguridad) {
+        this.indiceSeguridad = indiceSeguridad;
+    }
+
+    public void setTotalReportes(Long totalReportes) {
+        this.totalReportes = totalReportes;
+    }
+
+    public void setDistribucionSeveridad(Map<String, Long> distribucionSeveridad) {
+        this.distribucionSeveridad = distribucionSeveridad;
     }
 
     public void setEfectosSecundarios(List<EfectoSecundarioDto> efectosSecundarios) {

@@ -21,29 +21,20 @@ public class VacunaCondicionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // Relación con la vacuna — LAZY para no cargar datos innecesarios
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_vacuna", nullable = false)
     private VacunaEntity vacuna;
 
-    // DECIMAL(5,1) — 4 enteros máximo, 1 decimal. NOT NULL en el schema.
     @Column(nullable = false, precision = 5, scale = 1)
     private BigDecimal temperatura;
 
-    // DECIMAL(5,1) sin NOT NULL — puede llegar null desde la base de datos.
-    // nullable = true es el default pero lo dejamos explícito para que sea
-    // claro que es intencional y no un olvido.
-    // name es obligatorio: sin él Hibernate busca la columna por el nombre
-    // literal del campo ("tiempoAmbiente") en lugar de "tiempo_ambiente".
+
     @Column(name = "tiempo_ambiente", nullable = true, precision = 5, scale = 1)
     private BigDecimal tiempoAmbiente;
 
-    // updatable = false — refleja que creado_en no tiene ON UPDATE en el schema.
-    // Hibernate nunca lo sobreescribe después del INSERT.
     @Column(name = "creado_en", nullable = false, updatable = false)
     private LocalDateTime creadoEn;
 
-    // actualizado_en sí se actualiza — refleja el ON UPDATE CURRENT_TIMESTAMP
     @Column(name = "actualizado_en", nullable = false)
     private LocalDateTime actualizadoEn;
 

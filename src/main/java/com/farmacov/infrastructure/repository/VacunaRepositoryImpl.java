@@ -8,8 +8,12 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -99,4 +103,91 @@ public class VacunaRepositoryImpl implements VacunaRepository, PanacheRepository
     public long countVacunas() {
         return count();
     }
+
+    @Override
+    @Transactional
+    public Vacuna saveVacuna(Vacuna vacuna) {
+        VacunaEntity entity = new VacunaEntity();
+
+        // El id es manual en vacunas — sin AUTO_INCREMENT
+        entity.setId(vacuna.getIdVacuna());
+        entity.setNombre(vacuna.getNombre());
+        entity.setFarmaceutica(vacuna.getFarmaceutica());
+        entity.setTipo(vacuna.getTipo());
+        entity.setDescripcionGeneral(vacuna.getDescripcionGeneral());
+        entity.setCreadoEn(LocalDateTime.now());
+        entity.setActualizadoEn(LocalDateTime.now());
+
+        // Referencia al farmaco sin cargarlo completo
+        entity.setFarmaco(getEntityManager().getReference(
+                com.farmacov.infrastructure.entities.FarmacoEntity.class,
+                vacuna.getIdFarmaco()
+        ));
+
+        persist(entity);
+        return VacunaMapper.toDomain(entity);
+    }
+
+    @Override
+    @Transactional
+    public Vacuna updateVacuna(Vacuna vacuna) {
+        VacunaEntity entity = findByIdOptional(vacuna.getIdVacuna())
+                .orElseThrow(() -> new jakarta.ws.rs.NotFoundException(
+                        "Vacuna con id " + vacuna.getIdVacuna() + " no encontrada"
+                ));
+
+        // Solo actualizamos campos editables
+        // El id_farmaco no cambia — cambiar de farmaco no tiene sentido
+        entity.setNombre(vacuna.getNombre());
+        entity.setFarmaceutica(vacuna.getFarmaceutica());
+        entity.setTipo(vacuna.getTipo());
+        entity.setDescripcionGeneral(vacuna.getDescripcionGeneral());
+        entity.setActualizadoEn(LocalDateTime.now());
+
+        return VacunaMapper.toDomain(entity);
+    }
+
+    @Override
+    @Transactional
+    public void deleteVacunaById(Integer id) {
+        // Verificamos que no tenga reportes adversos — integridad de datos
+        long reportes = getEntityManager()
+                .createQuery(
+                        "SELECT COUNT(r) FROM ReporteAdversoEntity r WHERE r.vacuna.id = :id",
+                        Long.class)
+                .setParameter("id", id)
+                .getSingleResult();
+
+        if (reportes > 0) {
+            throw new jakarta.ws.rs.BadRequestException(
+                    "No se puede eliminar — tiene " + reportes + " reporte(s) adverso(s)"
+            );
+        }
+
+        deleteById(id);
+    }
+
+
+    @Override
+    @Transactional
+    public Map<Integer, BigDecimal> findIndicesSeguridad() {
+        List<Object[]> rows = getEntityManager()
+                .createNativeQuery("""
+                SELECT v.id, vis.indice_seguridad
+                FROM vacunas v
+                LEFT JOIN vista_indice_seguridad vis ON v.id = vis.id_vacuna
+                """)
+                .getResultList();
+
+        return rows.stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).intValue(),
+                        row -> row[1] != null
+                                ? BigDecimal.valueOf(((Number) row[1]).doubleValue())
+                                : BigDecimal.ZERO
+                ));
+    }
+
+
+
 }
