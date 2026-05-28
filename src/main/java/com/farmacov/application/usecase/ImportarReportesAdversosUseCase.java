@@ -9,6 +9,8 @@ import com.farmacov.infrastructure.entities.VacunaEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -19,7 +21,6 @@ import java.util.Set;
 
 @ApplicationScoped
 public class ImportarReportesAdversosUseCase {
-    // Cada fila corre en su propia transaccion para que un error no cancele toda la importacion.
 
     @Inject
     EntityManager em;
@@ -60,36 +61,36 @@ public class ImportarReportesAdversosUseCase {
                 String esGraveStr   = CsvParser.getCampo(fila, 5);
                 String fechaStr     = CsvParser.getCampo(fila, 6);
 
-                // Validaciones basicas antes de parsear para reportar errores por fila.
+                // Validaciones
                 if (idStr == null) throw new IllegalArgumentException("id es obligatorio");
                 if (idVacunaStr == null) throw new IllegalArgumentException("id_vacuna es obligatorio");
                 if (sexo == null || !SEXOS_VALIDOS.contains(sexo))
-                    throw new IllegalArgumentException("sexo invÃ¡lido: '" + sexo + "'");
+                    throw new IllegalArgumentException("sexo inválido: '" + sexo + "'");
                 if (grupoEdad == null || !GRUPOS_EDAD_VALIDOS.contains(grupoEdad))
-                    throw new IllegalArgumentException("grupo_edad invÃ¡lido: '" + grupoEdad + "'");
+                    throw new IllegalArgumentException("grupo_edad inválido: '" + grupoEdad + "'");
                 if (fechaStr == null) throw new IllegalArgumentException("fecha_reporte es obligatoria");
 
-                // El parseo tolera numeros exportados por Excel como decimales.
+                // Parsear, tolerante a decimales de Excel
                 Long id = (long) Double.parseDouble(idStr);
                 Integer idVacuna = (int) Double.parseDouble(idVacunaStr);
                 Boolean esGrave = esGraveStr != null && esGraveStr.trim().equals("1");
                 LocalDate fechaReporte = LocalDate.parse(fechaStr.trim());
 
-                // La vacuna debe existir antes de poder persistir el reporte.
-                VacunaEntity vacuna = em.find(VacunaEntity.class, idVacuna);
+                // Verificar que la vacuna existe
+                VacunaEntity vacuna = buscarVacuna(idVacuna);
                 if (vacuna == null)
                     throw new IllegalArgumentException("id_vacuna " + idVacuna + " no existe en la BD");
 
-                // El sintoma es opcional, pero si viene tambien debe existir.
+                // Verificar síntoma si viene
                 SintomaGraveEntity sintoma = null;
                 if (idSintomaStr != null) {
                     Integer idSintoma = (int) Double.parseDouble(idSintomaStr);
-                    sintoma = em.find(SintomaGraveEntity.class, idSintoma);
+                    sintoma = buscarSintoma(idSintoma);
                     if (sintoma == null)
                         throw new IllegalArgumentException("id_sintoma " + idSintoma + " no existe en la BD");
                 }
 
-                // Se construye la entity respetando las relaciones y claves foraneas.
+                // Construir entity
                 ReporteAdversoEntity entity = new ReporteAdversoEntity();
                 entity.setId(id);
                 entity.setVacuna(vacuna);
@@ -99,31 +100,30 @@ public class ImportarReportesAdversosUseCase {
                 entity.setEsGrave(esGrave);
                 entity.setFechaReporte(fechaReporte);
 
-                // Insercion aislada: una fila mala no debe abortar toda la importacion.
+                // Insertar en su propia transacción, si falla solo esta fila hace rollback
                 inserter.insertar(entity);
                 insertados++;
 
             } catch (NumberFormatException e) {
                 errores++;
-                detalles.add("Fila " + numeroFila + ": nÃºmero invÃ¡lido â€” " + e.getMessage());
+                detalles.add("Fila " + numeroFila + ": número inválido — " + e.getMessage());
             } catch (DateTimeParseException e) {
                 errores++;
-                detalles.add("Fila " + numeroFila + ": fecha invÃ¡lida â€” usa formato YYYY-MM-DD");
+                detalles.add("Fila " + numeroFila + ": fecha inválida — usa formato YYYY-MM-DD");
             } catch (IllegalArgumentException e) {
                 errores++;
                 detalles.add("Fila " + numeroFila + ": " + e.getMessage());
             } catch (Exception e) {
                 errores++;
-                detalles.add("Fila " + numeroFila + ": error inesperado â€” " + e.getMessage());
+                detalles.add("Fila " + numeroFila + ": error inesperado — " + e.getMessage());
             }
         }
 
-        // Se recalcula el resumen precalculado despues de la importacion, aunque haya errores parciales.
+        // Recalcular tabla precalculada en su propia transacción
         try {
-            em.createNativeQuery("CALL sp_recalcular_resumen_sintomas()")
-                    .executeUpdate();
+            recalcularResumen();
         } catch (Exception e) {
-            detalles.add("Advertencia: no se pudo recalcular el resumen de sÃ­ntomas â€” " + e.getMessage());
+            detalles.add("Advertencia: no se pudo recalcular el resumen de síntomas — " + e.getMessage());
         }
 
         ImportResultDto resultado = new ImportResultDto();
@@ -133,5 +133,26 @@ public class ImportarReportesAdversosUseCase {
         resultado.setDetalles(detalles);
 
         return resultado;
+    }
+
+    // Busca vacuna en su propia transacción de lectura
+    @Transactional(TxType.REQUIRED)
+    public VacunaEntity buscarVacuna(Integer id) {
+        return em.find(VacunaEntity.class, id);
+    }
+
+    // Busca síntoma en su propia transacción de lectura
+    @Transactional(TxType.REQUIRED)
+    public SintomaGraveEntity buscarSintoma(Integer id) {
+        return em.find(SintomaGraveEntity.class, id);
+    }
+
+    // FIX:
+    // Ejecuta el SP de recálculo en su propia transacción independiente
+    // REQUIRES_NEW garantiza transacción limpia sin importar el contexto
+    @Transactional(TxType.REQUIRES_NEW)
+    public void recalcularResumen() {
+        em.createNativeQuery("CALL sp_recalcular_resumen_sintomas()")
+                .executeUpdate();
     }
 }
