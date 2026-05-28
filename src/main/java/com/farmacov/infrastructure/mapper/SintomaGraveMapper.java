@@ -7,7 +7,8 @@ public class SintomaGraveMapper {
 
     public static SintomaGrave toDomain(SintomaGraveEntity entity) {
         SintomaGrave sintomaGrave = new SintomaGrave();
-        sintomaGrave.setId(entity.getId()); // cambio de getid
+        sintomaGrave.setId(entity.getId());
+        // En dominio solo dejamos el id de la vacuna para no acoplarlo a JPA.
         //ahora solo se exxtrae el id de la vacuna como en los mappers
         if (entity.getVacuna() != null) {
             sintomaGrave.setIdVacuna(entity.getVacuna() !=null ? entity.getVacuna().getId() : null);
@@ -19,8 +20,7 @@ public class SintomaGraveMapper {
     public static SintomaGraveEntity toEntity(SintomaGrave sintomaGrave) {
         SintomaGraveEntity entity = new SintomaGraveEntity();
         entity.setId(sintomaGrave.getId());
-        // vacuna ya no se setea aqui, es responsabilidad del RepositoryImpl
-        // usa em.getReference() igual que en el patron
+        // La relacion se completa en el repositorio con em.getReference() para respetar la FK.
         entity.setNombre(sintomaGrave.getNombre());
         return entity;
     }

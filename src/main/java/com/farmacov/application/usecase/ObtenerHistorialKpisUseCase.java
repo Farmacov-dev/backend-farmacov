@@ -11,6 +11,7 @@ public class ObtenerHistorialKpisUseCase {
     @Inject
     UsuariosRepository usuariosRepository;
 
+    // Resume el estado de usuarios en dos contadores para la vista historica de KPI.
     public HistorialKpisDto execute() {
         long usuariosActivos = usuariosRepository.countByEstado("ACTIVO");
         long usuariosSuspendidos = usuariosRepository.countByEstado("SUSPENDIDO");

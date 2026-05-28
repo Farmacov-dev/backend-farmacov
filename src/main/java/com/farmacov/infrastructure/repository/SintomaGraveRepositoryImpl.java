@@ -21,26 +21,26 @@ public class SintomaGraveRepositoryImpl implements
         SintomaGraveRepository, PanacheRepositoryBase<SintomaGraveEntity, Integer> {
 
     @Inject
-    EntityManager em;  //agregado
+    EntityManager em;
 
     @Override
     @Transactional
     public SintomaGrave save(SintomaGrave sintomaGrave) {
         SintomaGraveEntity entity = SintomaGraveMapper.toEntity(sintomaGrave);
-        // agregado getReference para respetar la FK
+        // Se usa un proxy administrado para no hacer un SELECT extra de la vacuna.
         entity.setVacuna(em.getReference(VacunaEntity.class, sintomaGrave.getIdVacuna()));
         persist(entity);
         return SintomaGraveMapper.toDomain(entity);
     }
 
     @Override
-    @Transactional //agregado
+    @Transactional
     public Optional<SintomaGrave> getById(Integer id) {
         return findByIdOptional(id).map(SintomaGraveMapper::toDomain);
     }
 
     @Override
-    @Transactional //agregado
+    @Transactional
     public List<SintomaGrave> getAll() {
         return listAll().stream()
                 .map(SintomaGraveMapper::toDomain)
@@ -65,6 +65,7 @@ public class SintomaGraveRepositoryImpl implements
                 ));
 
         // Solo actualizamos el nombre — la vacuna no cambia
+        // La relacion con la vacuna no se toca; solo cambia el nombre visible.
         entity.setNombre(sintomaGrave.getNombre());
 
         return SintomaGraveMapper.toDomain(entity);

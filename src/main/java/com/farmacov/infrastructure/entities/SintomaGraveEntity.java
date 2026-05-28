@@ -15,16 +15,20 @@ import jakarta.persistence.Table;
 public class SintomaGraveEntity {
 
     // INT AUTO_INCREMENT — Hibernate delega la generación del ID a MySQL
+    // MySQL genera el id; Hibernate solo lo recupera despues del persist.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // Relacion LAZY: se carga la vacuna solo cuando hace falta, no en cada consulta.
+    // El nombre del campo debe coincidir con el mappedBy de VacunaEntity.
     // relacion bidireccional con VacunaEntity.
     // "vacuna" es el nombre de este campo, debe coincidir con el mappedBy = "vacuna" declarado en VacunaEntity.sintomasGraves
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_vacuna", nullable = false)
     private VacunaEntity vacuna;
 
+    // Limite impuesto por el schema para evitar textos mas largos que la columna.
     // cambio por que es VARCHAR(150) NOT NULL en el schema
     @Column(name = "nombre", nullable = false, length = 150)
     private String nombre;

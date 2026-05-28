@@ -26,6 +26,7 @@ public class SintomaGraveUseCase {
     ReporteAdversoRepository reporteAdversoRepository;
 
     // Crea un síntoma grave nuevo asociado a una vacuna
+    // Valida la FK de vacuna antes de persistir y evita crear sintomas huérfanos.
     public SintomaGrave crear(CrearSintomaGraveDto dto) {
         // Validamos que la vacuna existe
         vacunaRepository.findVacunaById(dto.getIdVacuna())
@@ -41,6 +42,7 @@ public class SintomaGraveUseCase {
     }
 
     // Obtiene todos los síntomas de una vacuna
+    // Requiere una vacuna valida porque la consulta esta definida por ese contexto.
     public List<SintomaGrave> obtenerPorVacuna(Integer idVacuna) {
         vacunaRepository.findVacunaById(idVacuna)
                 .orElseThrow(() -> new NotFoundException(
@@ -56,6 +58,7 @@ public class SintomaGraveUseCase {
     }
 
     // Busca un síntoma por su ID
+    // Busca un registro puntual y traduce la ausencia a error de dominio/API.
     public SintomaGrave obtenerPorId(Integer id) {
         return sintomaGraveRepository.getById(id)
                 .orElseThrow(() -> new NotFoundException(
@@ -64,6 +67,7 @@ public class SintomaGraveUseCase {
     }
 
     // Actualiza el nombre de un síntoma existente
+    // Se reconstruye el objeto para limitar la actualizacion al nombre.
     public SintomaGrave actualizar(Integer id, ActualizarSintomaGraveDto dto) {
         sintomaGraveRepository.getById(id)
                 .orElseThrow(() -> new NotFoundException(
@@ -78,6 +82,7 @@ public class SintomaGraveUseCase {
     }
 
     // Elimina un síntoma solo si no tiene reportes adversos
+    // Bloquea el borrado cuando ya hay reportes asociados para no romper historial.
     public void eliminar(Integer id) {
         sintomaGraveRepository.getById(id)
                 .orElseThrow(() -> new NotFoundException(

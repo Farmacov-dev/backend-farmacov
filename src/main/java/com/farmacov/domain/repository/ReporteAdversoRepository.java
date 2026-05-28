@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReporteAdversoRepository {
+    // Contrato de repositorio para reportes adversos y las consultas de KPI/seguridad sobre ellos.
     ReporteAdverso save(ReporteAdverso reporteAdverso);
     Optional<ReporteAdverso> getById(Long id);
     List<ReporteAdverso> getAll();

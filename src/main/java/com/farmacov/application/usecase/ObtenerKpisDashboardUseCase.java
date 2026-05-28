@@ -17,6 +17,7 @@ public class ObtenerKpisDashboardUseCase {
     @Inject
     ReporteAdversoRepository reporteAdversoRepository;
 
+    // Los conteos se resuelven en los repositorios; el porcentaje se calcula y redondea aqui.
     public KpisDashboardDto execute() {
         // COUNT(*) — MySQL devuelve solo un número, no objetos
         long totalVacunas = vacunaRepository.countVacunas();

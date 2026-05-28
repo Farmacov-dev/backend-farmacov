@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SintomaGraveRepository {
+    // Contrato de persistencia para sintomas graves; la implementacion concreta vive en infraestructura.
 
     SintomaGrave save(SintomaGrave sintomaGrave);
     Optional<SintomaGrave> getById(Integer id);

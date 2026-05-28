@@ -16,7 +16,7 @@ public class SintomaGrave {
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
-    // bug: asignaba en lguar de retornar
+    // El dominio guarda solo el id de vacuna, no la entidad completa.
     public Integer getIdVacuna() { return idVacuna; }
     public void setIdVacuna(Integer idVacuna) { this.idVacuna = idVacuna; }
 
