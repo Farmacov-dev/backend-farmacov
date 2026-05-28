@@ -14,6 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/admin/sintomas-graves")
 @Tag(name = "Admin - Síntomas Graves", description = "Gestión de síntomas graves de vacunas")
+// Resource administrativo para consultar y administrar sintomas graves asociados a vacunas.
 public class SintomasGravesResource {
 
     @Inject

@@ -36,6 +36,7 @@ public class ReporteAdverso {
         }
 
         public static GrupoEdad fromValue(String value) {
+            // Traduce el valor de texto persistido al enum del dominio o falla de inmediato.
             for (GrupoEdad grupoEdad : values()) {
                 if (grupoEdad.value.equals(value)) {
                     return grupoEdad;

@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Set;
 
 @ApplicationScoped
-// Sin @Transactional aquí — cada fila maneja su propia transacción
 public class ImportarReportesAdversosUseCase {
+    // Cada fila corre en su propia transaccion para que un error no cancele toda la importacion.
 
     @Inject
     EntityManager em;
@@ -60,27 +60,27 @@ public class ImportarReportesAdversosUseCase {
                 String esGraveStr   = CsvParser.getCampo(fila, 5);
                 String fechaStr     = CsvParser.getCampo(fila, 6);
 
-                // Validaciones
+                // Validaciones basicas antes de parsear para reportar errores por fila.
                 if (idStr == null) throw new IllegalArgumentException("id es obligatorio");
                 if (idVacunaStr == null) throw new IllegalArgumentException("id_vacuna es obligatorio");
                 if (sexo == null || !SEXOS_VALIDOS.contains(sexo))
-                    throw new IllegalArgumentException("sexo inválido: '" + sexo + "'");
+                    throw new IllegalArgumentException("sexo invÃ¡lido: '" + sexo + "'");
                 if (grupoEdad == null || !GRUPOS_EDAD_VALIDOS.contains(grupoEdad))
-                    throw new IllegalArgumentException("grupo_edad inválido: '" + grupoEdad + "'");
+                    throw new IllegalArgumentException("grupo_edad invÃ¡lido: '" + grupoEdad + "'");
                 if (fechaStr == null) throw new IllegalArgumentException("fecha_reporte es obligatoria");
 
-                // Parsear — tolerante a decimales de Excel
+                // El parseo tolera numeros exportados por Excel como decimales.
                 Long id = (long) Double.parseDouble(idStr);
                 Integer idVacuna = (int) Double.parseDouble(idVacunaStr);
                 Boolean esGrave = esGraveStr != null && esGraveStr.trim().equals("1");
                 LocalDate fechaReporte = LocalDate.parse(fechaStr.trim());
 
-                // Verificar que la vacuna existe
+                // La vacuna debe existir antes de poder persistir el reporte.
                 VacunaEntity vacuna = em.find(VacunaEntity.class, idVacuna);
                 if (vacuna == null)
                     throw new IllegalArgumentException("id_vacuna " + idVacuna + " no existe en la BD");
 
-                // Verificar síntoma si viene
+                // El sintoma es opcional, pero si viene tambien debe existir.
                 SintomaGraveEntity sintoma = null;
                 if (idSintomaStr != null) {
                     Integer idSintoma = (int) Double.parseDouble(idSintomaStr);
@@ -89,7 +89,7 @@ public class ImportarReportesAdversosUseCase {
                         throw new IllegalArgumentException("id_sintoma " + idSintoma + " no existe en la BD");
                 }
 
-                // Construir entity
+                // Se construye la entity respetando las relaciones y claves foraneas.
                 ReporteAdversoEntity entity = new ReporteAdversoEntity();
                 entity.setId(id);
                 entity.setVacuna(vacuna);
@@ -99,33 +99,31 @@ public class ImportarReportesAdversosUseCase {
                 entity.setEsGrave(esGrave);
                 entity.setFechaReporte(fechaReporte);
 
-                // Insertar en su propia transacción — si falla solo esta fila hace rollback
+                // Insercion aislada: una fila mala no debe abortar toda la importacion.
                 inserter.insertar(entity);
                 insertados++;
 
             } catch (NumberFormatException e) {
                 errores++;
-                detalles.add("Fila " + numeroFila + ": número inválido — " + e.getMessage());
+                detalles.add("Fila " + numeroFila + ": nÃºmero invÃ¡lido â€” " + e.getMessage());
             } catch (DateTimeParseException e) {
                 errores++;
-                detalles.add("Fila " + numeroFila + ": fecha inválida — usa formato YYYY-MM-DD");
+                detalles.add("Fila " + numeroFila + ": fecha invÃ¡lida â€” usa formato YYYY-MM-DD");
             } catch (IllegalArgumentException e) {
                 errores++;
                 detalles.add("Fila " + numeroFila + ": " + e.getMessage());
             } catch (Exception e) {
                 errores++;
-                detalles.add("Fila " + numeroFila + ": error inesperado — " + e.getMessage());
+                detalles.add("Fila " + numeroFila + ": error inesperado â€” " + e.getMessage());
             }
         }
 
-        // Al terminar toda la importación — recalcula la tabla precalculada
-        // Se llama siempre aunque haya errores parciales
-        // Si el SP falla, la importación igual devuelve su resultado
+        // Se recalcula el resumen precalculado despues de la importacion, aunque haya errores parciales.
         try {
             em.createNativeQuery("CALL sp_recalcular_resumen_sintomas()")
                     .executeUpdate();
         } catch (Exception e) {
-            detalles.add("Advertencia: no se pudo recalcular el resumen de síntomas — " + e.getMessage());
+            detalles.add("Advertencia: no se pudo recalcular el resumen de sÃ­ntomas â€” " + e.getMessage());
         }
 
         ImportResultDto resultado = new ImportResultDto();

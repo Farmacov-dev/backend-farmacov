@@ -36,6 +36,7 @@ public class ImportarSintomasGravesUseCase {
         List<String> detalles = new ArrayList<>();
 
         for (int i = 0; i < filas.size(); i++) {
+            // +2 porque la fila 1 es el encabezado del CSV.
             int numeroFila = i + 2;
             String[] fila = filas.get(i);
 
@@ -43,6 +44,7 @@ public class ImportarSintomasGravesUseCase {
                 String idVacunaStr = CsvParser.getCampo(fila, 0);
                 String nombre      = CsvParser.getCampo(fila, 1);
 
+                // Se valida antes de convertir para reportar errores de formato por fila.
                 if (idVacunaStr == null)
                     throw new IllegalArgumentException("id_vacuna es obligatorio");
                 if (nombre == null || nombre.isBlank())
@@ -50,6 +52,7 @@ public class ImportarSintomasGravesUseCase {
                 if (nombre.length() > 150)
                     throw new IllegalArgumentException("nombre no puede superar 150 caracteres");
 
+                // El CSV suele traer numeros como texto decimal; por eso se parsea asi.
                 Integer idVacuna = (int) Double.parseDouble(idVacunaStr);
 
                 VacunaEntity vacuna = em.find(VacunaEntity.class, idVacuna);
@@ -60,6 +63,7 @@ public class ImportarSintomasGravesUseCase {
                 entity.setVacuna(vacuna);
                 entity.setNombre(nombre);
 
+                // La insercion aislada permite continuar aunque otra fila falle.
                 inserter.insertar(entity);
                 insertados++;
 

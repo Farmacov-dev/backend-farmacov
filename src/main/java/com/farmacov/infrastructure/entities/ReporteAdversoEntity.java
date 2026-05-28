@@ -22,6 +22,7 @@ public class ReporteAdversoEntity {
     @JoinColumn(name = "id_vacuna", nullable = false)
     private VacunaEntity vacuna;
 
+    // Es opcional porque algunos reportes no estan ligados a un sintoma grave especifico.
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "id_sintoma")
     private SintomaGraveEntity sintomaGrave;
@@ -39,6 +40,7 @@ public class ReporteAdversoEntity {
     private LocalDate fechaReporte;
 
     @Column(name = "creado_en", insertable = false, updatable = false)
+    // Lo llena la base de datos al insertar la fila.
     private LocalDateTime creadoEn;
 
     public Long getId() {

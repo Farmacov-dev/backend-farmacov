@@ -18,6 +18,7 @@ public class CreateReportesAdversosUseCase {
         this.reporteAdversoRepository = reporteAdversoRepository;
     }
 
+    // Convierte el DTO plano a dominio y mapea el texto del grupo de edad al enum.
     public ReporteAdverso execute(CrearReporteAdversoDto dto){
         ReporteAdverso reporteAdverso = new ReporteAdverso();
 

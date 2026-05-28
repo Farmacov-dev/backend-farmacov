@@ -8,6 +8,7 @@ public class ReporteAdversoMapper {
     public static ReporteAdverso toDomain(ReporteAdversoEntity entity) {
         ReporteAdverso reporteAdverso = new ReporteAdverso();
         reporteAdverso.setId(entity.getId());
+        // Solo se trasladan los ids al dominio para no acoplarlo a entidades JPA.
         if (entity.getVacuna() != null) {
             reporteAdverso.setIdVacuna(entity.getVacuna().getId());
         }
@@ -25,6 +26,7 @@ public class ReporteAdversoMapper {
     public static ReporteAdversoEntity toEntity(ReporteAdverso reporteAdverso) {
         ReporteAdversoEntity entity = new ReporteAdversoEntity();
         entity.setId(reporteAdverso.getId());
+        // Los enums se aplastan al valor de texto que queda persistido.
         entity.setSexo(reporteAdverso.getSexo().name());
         entity.setGrupoEdad(reporteAdverso.getGrupoEdad().getValue());
         entity.setEsGrave(reporteAdverso.getEsGrave());

@@ -15,6 +15,7 @@ public class SintomaGraveInserter {
 
     @Transactional(TxType.REQUIRES_NEW)
     public void insertar(SintomaGraveEntity entity) {
+        // Cada fila se persiste en su propia transaccion para aislar errores parciales.
         em.persist(entity);
     }
 }

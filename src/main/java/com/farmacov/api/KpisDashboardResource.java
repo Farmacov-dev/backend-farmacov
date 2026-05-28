@@ -21,6 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/dashboard/kpis")
 @Tag(name = "Dashboard", description = "endpoints del portal de analisis")
+// Expone los KPIs agregados que usa el dashboard.
 public class KpisDashboardResource {
 
     @Inject

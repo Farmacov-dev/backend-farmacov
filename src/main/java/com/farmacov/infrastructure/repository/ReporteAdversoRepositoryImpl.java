@@ -30,6 +30,7 @@ public class ReporteAdversoRepositoryImpl
     @Transactional
     public ReporteAdverso save(ReporteAdverso reporteAdverso) {
         ReporteAdversoEntity entity = ReporteAdversoMapper.toEntity(reporteAdverso);
+        // Se usan referencias administradas para evitar selects extra y respetar las FK.
         entity.setVacuna(em.getReference(VacunaEntity.class, reporteAdverso.getIdVacuna()));
         if (reporteAdverso.getIdSintoma() != null) {
             entity.setSintomaGrave(em.getReference(SintomaGraveEntity.class, reporteAdverso.getIdSintoma()));
@@ -79,14 +80,10 @@ public class ReporteAdversoRepositoryImpl
                 .findFirst();
     }
 
-    // -------------------------------------------------------------------------
-    // sp_indice_seguridad — para una vacuna específica
-    // OUT p_indice es DECIMAL(5,2) en MySQL → el driver lo entrega como
-    // BigDecimal, por eso registramos BigDecimal.class en lugar de Double.
-    // El use case decidirá cómo convertirlo para el DTO de respuesta.
-    // -------------------------------------------------------------------------
+    // Procedimiento almacenado para el indice de seguridad de una vacuna concreta.
     @Override
     public IndiceSeguridadResult getIndiceSeguridad(Integer idVacuna) {
+        // MySQL devuelve el decimal como BigDecimal, por eso se registra ese tipo en el OUT.
         StoredProcedureQuery q = em.createStoredProcedureQuery("sp_indice_seguridad");
         q.registerStoredProcedureParameter("p_id_vacuna", Integer.class,    ParameterMode.IN);
         q.registerStoredProcedureParameter("p_total",     Long.class,       ParameterMode.OUT);
@@ -102,9 +99,7 @@ public class ReporteAdversoRepositoryImpl
         return new IndiceSeguridadResult(idVacuna, null, total, graves, indice);
     }
 
-    // -------------------------------------------------------------------------
-    // vista_indice_seguridad — todos los índices de una vez
-    // -------------------------------------------------------------------------
+    // Vista precalculada que devuelve todos los indices de seguridad en una sola consulta.
     @Override
     @SuppressWarnings("unchecked")
     public List<IndiceSeguridadResult> getAllIndiceSeguridad() {
@@ -123,23 +118,23 @@ public class ReporteAdversoRepositoryImpl
         )).toList();
     }
 
-    /// optimizaicon: implementacion de metodos optimizacion de kpis
+    // Metodos de conteo optimizados para KPI: no cargan entidades completas.
     @Override
     public long countAll() {
-        // COUNT(*) directo — MySQL devuelve solo un número
+        // COUNT(*) directo: solo se devuelve un numero.
         return count();
     }
 
     @Override
     public long countByEsGrave(boolean esGrave) {
-        // COUNT WHERE es_grave = ? — no trae objetos a memoria
+        // COUNT filtrado sin cargar entidades en memoria.
         return count("esGrave", esGrave);
     }
 
     @Override
     @Transactional
     public long countByMesYAnio(int mes, int anio) {
-        // MySQL filtra por mes y año — no viajan registros a Java
+        // El filtro por mes y ano se resuelve en la base de datos.
         return (long) getEntityManager()
                 .createQuery(
                         "SELECT COUNT(r) FROM ReporteAdversoEntity r " +
@@ -150,13 +145,9 @@ public class ReporteAdversoRepositoryImpl
                 .getSingleResult();
     }
 
-
-
     @Override
     @Transactional
     public long countByIdSintoma(Integer idSintoma) {
         return count("idSintoma", idSintoma);
     }
-
-
 }
