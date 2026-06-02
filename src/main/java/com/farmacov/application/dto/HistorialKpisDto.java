@@ -21,6 +21,8 @@ public class HistorialKpisDto {
         this.usuariosActivos = usuariosActivos;
     }
 
+
+
     public long getUsuariosSuspendidos() {
         return usuariosSuspendidos;
     }
