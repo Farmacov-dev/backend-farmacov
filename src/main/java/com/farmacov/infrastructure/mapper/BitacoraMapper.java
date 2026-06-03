@@ -10,7 +10,10 @@ public class BitacoraMapper {
         bitacora.setId(entity.getId());
         bitacora.setIdAdmin(entity.getAdmin().getId());
         bitacora.setAccion(Bitacora.AccionEnum.valueOf(entity.getAccion()));
-        bitacora.setIdUsuarioAfectado(entity.getUsuarioAfectado().getId());
+        // puede ser null si el usuario afectado fue eliminado (accion=DELETE)
+        if (entity.getUsuarioAfectado() != null) {
+            bitacora.setIdUsuarioAfectado(entity.getUsuarioAfectado().getId());
+        }
         bitacora.setCreadoEn(entity.getCreadoEn());
         return bitacora;
     }

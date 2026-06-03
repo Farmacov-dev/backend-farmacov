@@ -27,8 +27,10 @@ public class BitacoraEntity {
     @Column(name = "accion", nullable = false, length = 10)
     private String accion;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_usuario_afectado", nullable = false)
+    // nullable=true: cuando el usuario afectado es eliminado, la FK se pone a NULL
+    // para conservar el registro de auditoría (accion=DELETE) en bitácora
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "id_usuario_afectado", nullable = true)
     private UsuariosEntity usuarioAfectado;
 
     @Column(name = "creado_en", nullable = false, insertable = false, updatable = false)

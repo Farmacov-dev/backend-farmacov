@@ -52,4 +52,10 @@ public class UltimaActividadUsuarioRepositoryImpl
     public Optional<UltimaActividadUsuario> findByUsuarioId(UUID idUsuario) {
         return findByIdOptional(idUsuario).map(UltimaActividadUsuarioMapper::toDomain);
     }
+
+    @Override
+    @Transactional
+    public void eliminarPorUsuario(UUID idUsuario) {
+        deleteById(idUsuario);
+    }
 }

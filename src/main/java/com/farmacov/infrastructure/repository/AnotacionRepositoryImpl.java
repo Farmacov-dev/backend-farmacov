@@ -74,4 +74,12 @@ public class AnotacionRepositoryImpl implements AnotacionRepository, PanacheRepo
         deleteById(id);
     }
 
+    @Override
+    @Transactional
+    public void eliminarPorUsuario(UUID idUsuario) {
+        em.createQuery("DELETE FROM AnotacionEntity a WHERE a.usuario.id = :id")
+                .setParameter("id", idUsuario)
+                .executeUpdate();
+    }
+
 }

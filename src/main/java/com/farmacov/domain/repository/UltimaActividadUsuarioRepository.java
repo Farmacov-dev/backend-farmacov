@@ -10,4 +10,6 @@ public interface UltimaActividadUsuarioRepository {
     void upsert(UltimaActividadUsuario actividadUsuario);
 
     Optional<UltimaActividadUsuario> findByUsuarioId(UUID idUsuario);
+
+    void eliminarPorUsuario(UUID idUsuario);
 }
