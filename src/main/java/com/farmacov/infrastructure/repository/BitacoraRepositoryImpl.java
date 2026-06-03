@@ -32,4 +32,10 @@ public class BitacoraRepositoryImpl implements BitacoraRepository, PanacheReposi
                 .map(BitacoraMapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public void eliminarPorUsuario(UUID idUsuario) {
+        delete("admin.id = ?1 OR usuarioAfectado.id = ?1", idUsuario);
+    }
 }
