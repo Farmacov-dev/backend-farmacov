@@ -11,6 +11,10 @@ public interface BitacoraRepository {
 
     List<Bitacora> obtenerTodos();
 
+    List<Bitacora> obtenerPaginado(int page, int size);
+
+    long contarTodos();
+
     // elimina entradas donde el usuario era el admin (necesario antes de borrar al usuario)
     void eliminarPorAdmin(UUID idAdmin);
 

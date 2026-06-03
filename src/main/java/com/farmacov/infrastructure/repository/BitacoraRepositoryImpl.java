@@ -37,6 +37,20 @@ public class BitacoraRepositoryImpl implements BitacoraRepository, PanacheReposi
     }
 
     @Override
+    public List<Bitacora> obtenerPaginado(int page, int size) {
+        return find("ORDER BY creadoEn DESC")
+                .page(page, size)
+                .stream()
+                .map(BitacoraMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public long contarTodos() {
+        return count();
+    }
+
+    @Override
     @Transactional
     public void eliminarPorAdmin(UUID idAdmin) {
         // borra solo las entradas donde el usuario eliminado era el admin que realizó la acción
