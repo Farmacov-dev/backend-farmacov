@@ -29,17 +29,21 @@ public class ObtenerBitacoraUseCase {
     }
 
     private BitacoraResponseDto toDto(Bitacora bitacora) {
-        String nombreAdmin = resolverNombre(bitacora);
+        String nombreAdmin = resolverNombrePorId(bitacora.getIdAdmin());
+        String nombreAfectado = bitacora.getIdUsuarioAfectado() != null
+                ? resolverNombrePorId(bitacora.getIdUsuarioAfectado())
+                : "Usuario eliminado";
         return new BitacoraResponseDto(
+                bitacora.getIdAdmin(),
                 nombreAdmin,
                 bitacora.getAccion().name(),
+                nombreAfectado,
                 bitacora.getCreadoEn()
         );
     }
 
-    private String resolverNombre(Bitacora bitacora) {
-        Optional<Usuarios> admin = usuariosRepository.findUsuarioById(bitacora.getIdAdmin());
-        return admin
+    private String resolverNombrePorId(java.util.UUID id) {
+        return usuariosRepository.findUsuarioById(id)
                 .map(u -> u.getNombre() + " " + u.getApellidoPaterno())
                 .orElse("Usuario desconocido");
     }

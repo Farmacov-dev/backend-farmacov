@@ -19,4 +19,6 @@ public interface AnotacionRepository {
     Anotacion update(Anotacion anotacion);
 
     void deleteAnotacionById(Integer id);
+
+    void eliminarPorUsuario(UUID idUsuario);
 }

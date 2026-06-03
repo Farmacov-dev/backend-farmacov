@@ -19,7 +19,7 @@ public class ActualizarUsuarioUseCase {
     RegistrarBitacoraUseCase registrarBitacoraUseCase;
 
     @Transactional
-    public Usuarios execute(UUID id, ActualizarUsuarioDto dto) {
+    public Usuarios execute(UUID idAdmin, UUID id, ActualizarUsuarioDto dto) {
         // se arma el modelo con los campos a editar
         Usuarios usuario = new Usuarios();
         usuario.setId(id);
@@ -33,7 +33,7 @@ public class ActualizarUsuarioUseCase {
         Usuarios actualizado = usuariosRepository.updateUsuario(usuario);
 
         // registrar la acción en bitácora dentro de la misma transacción
-        registrarBitacoraUseCase.execute(dto.getIdAdmin(), Bitacora.AccionEnum.UPDATE, id);
+        registrarBitacoraUseCase.execute(idAdmin, Bitacora.AccionEnum.UPDATE, id);
 
         return actualizado;
     }

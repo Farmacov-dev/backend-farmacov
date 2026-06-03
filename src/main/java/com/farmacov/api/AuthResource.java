@@ -4,6 +4,9 @@ import com.farmacov.application.dto.RegistroDto;
 import com.farmacov.application.dto.UsuarioResponseDto;
 import com.farmacov.application.usecase.LoginUseCase;
 import com.farmacov.application.usecase.RegistroUseCase;
+import com.farmacov.domain.auth.IdentityProvider;
+import com.farmacov.domain.models.Usuarios;
+import com.farmacov.domain.repository.UsuariosRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -13,6 +16,8 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.validation.Valid;
+
+import java.util.UUID;
 
 ///  imports de documentacio
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -32,6 +37,10 @@ public class AuthResource {
     LoginUseCase loginUseCase;
     @Inject
     RegistroUseCase registroUseCase;
+    @Inject
+    IdentityProvider identityProvider;
+    @Inject
+    UsuariosRepository usuariosRepository;
 
     // POST /auth/login
     // El frontend manda el JWT en el header Authorization
@@ -70,10 +79,28 @@ public class AuthResource {
     @Path("/registro")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response registro(@Valid RegistroDto dto) {
-        // idAdmin es null porque /auth/registro es una ruta pública sin token.
-        // RegistroUseCase usa el UUID del propio usuario creado como actor del log.
-        UsuarioResponseDto usuario = registroUseCase.execute(dto, null);
+    public Response registro(@Context HttpHeaders headers, @Valid RegistroDto dto) {
+        UUID idAdmin = resolverAdminDesdeToken(headers);
+        if (idAdmin == null) {
+            return Response.status(401)
+                    .entity("{\"error\": \"Token requerido para registrar usuarios\"}")
+                    .build();
+        }
+        UsuarioResponseDto usuario = registroUseCase.execute(dto, idAdmin);
         return Response.status(201).entity(usuario).build();
+    }
+
+    /** Lee el Bearer token del header y lo convierte al UUID del usuario en la BD. */
+    private UUID resolverAdminDesdeToken(HttpHeaders headers) {
+        String authHeader = headers.getHeaderString("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) return null;
+        try {
+            String firebaseUid = identityProvider.verifyToken(authHeader.substring(7));
+            return usuariosRepository.findUsuarioByFirebaseUuid(firebaseUid)
+                    .map(Usuarios::getId)
+                    .orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

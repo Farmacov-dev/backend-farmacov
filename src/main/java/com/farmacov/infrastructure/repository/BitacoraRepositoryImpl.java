@@ -21,7 +21,10 @@ public class BitacoraRepositoryImpl implements BitacoraRepository, PanacheReposi
     public void registrar(Bitacora bitacora) {
         BitacoraEntity entity = BitacoraMapper.toEntity(bitacora);
         entity.setAdmin(getEntityManager().getReference(UsuariosEntity.class, bitacora.getIdAdmin()));
-        entity.setUsuarioAfectado(getEntityManager().getReference(UsuariosEntity.class, bitacora.getIdUsuarioAfectado()));
+        // idUsuarioAfectado puede ser null en acciones DELETE (el usuario ya no existe)
+        if (bitacora.getIdUsuarioAfectado() != null) {
+            entity.setUsuarioAfectado(getEntityManager().getReference(UsuariosEntity.class, bitacora.getIdUsuarioAfectado()));
+        }
         persist(entity);
     }
 
@@ -35,7 +38,15 @@ public class BitacoraRepositoryImpl implements BitacoraRepository, PanacheReposi
 
     @Override
     @Transactional
-    public void eliminarPorUsuario(UUID idUsuario) {
-        delete("admin.id = ?1 OR usuarioAfectado.id = ?1", idUsuario);
+    public void eliminarPorAdmin(UUID idAdmin) {
+        // borra solo las entradas donde el usuario eliminado era el admin que realizó la acción
+        delete("admin.id = ?1", idAdmin);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarPorAfectado(UUID idUsuario) {
+        // id_usuario_afectado es NOT NULL en la DB, no se puede nullificar: se eliminan las filas
+        delete("usuarioAfectado.id = ?1", idUsuario);
     }
 }

@@ -11,5 +11,9 @@ public interface BitacoraRepository {
 
     List<Bitacora> obtenerTodos();
 
-    void eliminarPorUsuario(UUID idUsuario);
+    // elimina entradas donde el usuario era el admin (necesario antes de borrar al usuario)
+    void eliminarPorAdmin(UUID idAdmin);
+
+    // elimina entradas donde el usuario era el afectado (id_usuario_afectado NOT NULL en DB, no se puede nullificar)
+    void eliminarPorAfectado(UUID idUsuario);
 }

@@ -61,8 +61,10 @@ public class RegistroUseCase {
 
         Usuarios guardado = usuariosRepository.saveUsuario(nuevo);
 
-        UUID actorId = (idAdmin != null) ? idAdmin : guardado.getId();
-        registrarBitacoraUseCase.execute(actorId, Bitacora.AccionEnum.CREATE, guardado.getId());
+        if (idAdmin == null) {
+            throw new IllegalArgumentException("idAdmin es requerido para registrar la bitácora");
+        }
+        registrarBitacoraUseCase.execute(idAdmin, Bitacora.AccionEnum.CREATE, guardado.getId());
 
         UsuarioResponseDto response = new UsuarioResponseDto();
         response.setEmail(guardado.getCorreo());
