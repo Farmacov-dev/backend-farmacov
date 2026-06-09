@@ -51,10 +51,8 @@ public class Bitacora {
         }
     }
 
+    // idUsuarioAfectado puede ser null cuando el usuario fue eliminado (accion=DELETE)
     private void validateIdUsuarioAfectado(UUID idUsuarioAfectado) {
-        if (idUsuarioAfectado == null) {
-            throw new IllegalArgumentException("idUsuarioAfectado no puede ser nulo");
-        }
     }
 
     private void validateCreadoEn(LocalDateTime creadoEn) {

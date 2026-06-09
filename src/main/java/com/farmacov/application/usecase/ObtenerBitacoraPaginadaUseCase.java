@@ -1,19 +1,20 @@
 package com.farmacov.application.usecase;
 
 import com.farmacov.application.dto.BitacoraResponseDto;
+import com.farmacov.application.dto.PaginatedResponseDto;
 import com.farmacov.domain.models.Bitacora;
-import com.farmacov.domain.models.Usuarios;
 import com.farmacov.domain.repository.BitacoraRepository;
 import com.farmacov.domain.repository.UsuariosRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-public class ObtenerBitacoraUseCase {
+public class ObtenerBitacoraPaginadaUseCase {
+
+    private static final int PAGE_SIZE = 5;
 
     @Inject
     BitacoraRepository bitacoraRepository;
@@ -21,11 +22,15 @@ public class ObtenerBitacoraUseCase {
     @Inject
     UsuariosRepository usuariosRepository;
 
-    public List<BitacoraResponseDto> execute() {
-        return bitacoraRepository.obtenerTodos()
+    public PaginatedResponseDto<BitacoraResponseDto> execute(int page) {
+        List<BitacoraResponseDto> data = bitacoraRepository.obtenerPaginado(page, PAGE_SIZE)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+
+        long totalItems = bitacoraRepository.contarTodos();
+
+        return new PaginatedResponseDto<>(data, page, PAGE_SIZE, totalItems);
     }
 
     private BitacoraResponseDto toDto(Bitacora bitacora) {

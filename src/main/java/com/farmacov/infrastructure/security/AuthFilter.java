@@ -24,7 +24,7 @@ public class AuthFilter implements ContainerRequestFilter {
             "/auth/registro",
             "/dashboard/indice-seguridad",
             "/dashboard/resumen-sintomas",
-            "/usuarios",
+            // "/usuarios" — requiere token para PUT/DELETE (registra en bitácora)
             "/dashboard/costos",
             "/admin/",
             "/admin/roles/",
