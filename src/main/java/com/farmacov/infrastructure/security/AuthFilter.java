@@ -52,6 +52,11 @@ public class AuthFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext ctx) {
         String path = ctx.getUriInfo().getPath();
 
+        // Dejar pasar el preflight de CORS sin exigir autenticación.
+        if ("OPTIONS".equalsIgnoreCase(ctx.getMethod())) {
+            return;
+        }
+
         // Si es ruta publica, dejamos pasar sin verificar
         if (PUBLIC_PATHS.stream().anyMatch(path::startsWith)) {
             return;
