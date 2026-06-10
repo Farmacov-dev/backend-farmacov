@@ -14,6 +14,14 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+
+
+
 
 @Path("/admin/efectos-secundarios")
 @Tag(name = "Admin - Efectos Secundarios", description = "Gestión de efectos secundarios de vacunas")
@@ -33,10 +41,38 @@ public class EfectosSecundariosResource {
     @GET
     @Path("/vacuna/{idVacuna}")
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Listar efectos secundarios por vacuna",
             description = "Obtiene todos los efectos secundarios de una vacuna específica")
-    @APIResponse(responseCode = "200", description = "Lista obtenida correctamente")
-    @APIResponse(responseCode = "404", description = "Vacuna no encontrada")
+
+    @Parameter(name = "idVacuna", description = "ID de la vacuna", example = "1")
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Lista obtenida correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "efectos por vacuna",
+                            value = "[{\"id\":1,\"idVacuna\":1,\"descripcion\":\"Dolor en sitio de inyección\",\"severidad\":\"leve\"},{\"id\":2,\"idVacuna\":1,\"descripcion\":\"Fatiga\",\"severidad\":\"leve\"},{\"id\":3,\"idVacuna\":1,\"descripcion\":\"Miocarditis\",\"severidad\":\"grave\"}]"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Vacuna no encontrada",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrada",
+                            value = "{\"error\": \"Vacuna con id 99 no encontrada\"}"
+                    )
+            )
+    )
+
     public Response getByVacuna(@PathParam("idVacuna") Integer idVacuna) {
         return Response.ok(
                 efectoSecundarioUseCase.obtenerPorVacuna(idVacuna)
@@ -48,9 +84,37 @@ public class EfectosSecundariosResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Obtener efecto secundario por ID")
-    @APIResponse(responseCode = "200", description = "Efecto secundario encontrado")
-    @APIResponse(responseCode = "404", description = "No encontrado")
+
+    @Parameter(name = "id", description = "ID del efecto secundario", example = "1")
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Efecto secundario encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "efecto secundario",
+                            value = "{\"id\":1,\"idVacuna\":1,\"descripcion\":\"Dolor en sitio de inyección\",\"severidad\":\"leve\"}"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Efecto secundario no encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrado",
+                            value = "{\"error\": \"EfectoSecundario con id 99 no encontrado\"}"
+                    )
+            )
+    )
+
     public Response getById(@PathParam("id") Integer id) {
         return Response.ok(
                 efectoSecundarioUseCase.obtenerPorId(id)
@@ -62,11 +126,49 @@ public class EfectosSecundariosResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Crear efecto secundario",
             description = "Registra un nuevo efecto secundario asociado a una vacuna")
-    @APIResponse(responseCode = "201", description = "Efecto secundario creado correctamente")
-    @APIResponse(responseCode = "400", description = "Datos inválidos")
-    @APIResponse(responseCode = "404", description = "Vacuna no encontrada")
+
+    @APIResponse(
+            responseCode = "201",
+            description = "Efecto secundario creado correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "efecto creado",
+                            value = "{\"id\":4,\"idVacuna\":1,\"descripcion\":\"Fiebre alta\",\"severidad\":\"moderado\"}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "400",
+            description = "Datos inválidos — descripción vacía, severidad inválida o idVacuna faltante",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "error validacion",
+                            value = "{\"error\": \"La severidad es obligatoria\"}"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Vacuna no encontrada",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "vacuna no encontrada",
+                            value = "{\"error\": \"Vacuna con id 99 no encontrada\"}"
+                    )
+            )
+    )
+
     public Response crear(@Valid CrearEfectoSecundarioDto dto) {
         return Response.status(201)
                 .entity(efectoSecundarioUseCase.crear(dto))
@@ -79,10 +181,38 @@ public class EfectosSecundariosResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Editar efecto secundario",
             description = "Actualiza descripción y severidad de un efecto existente")
-    @APIResponse(responseCode = "200", description = "Efecto secundario actualizado")
-    @APIResponse(responseCode = "404", description = "No encontrado")
+
+    @Parameter(name = "id", description = "ID del efecto secundario a editar", example = "1")
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Efecto secundario actualizado correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "efecto actualizado",
+                            value = "{\"id\":1,\"idVacuna\":1,\"descripcion\":\"Dolor leve en brazo\",\"severidad\":\"leve\"}"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Efecto secundario no encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrado",
+                            value = "{\"error\": \"EfectoSecundario con id 99 no encontrado\"}"
+                    )
+            )
+    )
+
     public Response editar(
             @PathParam("id") Integer id,
             @Valid ActualizarEfectoSecundarioDto dto
@@ -97,11 +227,40 @@ public class EfectosSecundariosResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Eliminar efecto secundario",
             description = "Elimina un efecto secundario solo si no tiene reportes adversos asociados")
-    @APIResponse(responseCode = "204", description = "Eliminado correctamente")
-    @APIResponse(responseCode = "400", description = "Tiene reportes adversos — no se puede eliminar")
-    @APIResponse(responseCode = "404", description = "No encontrado")
+
+    @Parameter(name = "id", description = "ID del efecto secundario a eliminar", example = "1")
+
+    @APIResponse(responseCode = "204", description = "Eliminado correctamente — sin contenido")
+
+    @APIResponse(
+            responseCode = "400",
+            description = "No se puede eliminar, tiene reportes adversos asociados",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "error fk",
+                            value = "{\"error\": \"No se puede eliminar — tiene 5 reporte(s) adverso(s) asociado(s)\"}"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Efecto secundario no encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrado",
+                            value = "{\"error\": \"EfectoSecundario con id 99 no encontrado\"}"
+                    )
+            )
+    )
+
     public Response eliminar(@PathParam("id") Integer id) {
         efectoSecundarioUseCase.eliminar(id);
         return Response.noContent().build();
@@ -112,9 +271,24 @@ public class EfectosSecundariosResource {
     @GET
     @Path("/distribucion-severidad")
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Distribución global de severidad",
             description = "Conteo de efectos por severidad en todo el sistema")
-    @APIResponse(responseCode = "200", description = "Distribución obtenida correctamente")
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Distribución obtenida correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "distribucion global",
+                            value = "{\"leve\":45,\"moderado\":23,\"grave\":7}"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
     public Response getDistribucionSeveridad() {
         DistribucionSeveridadDto dto = obtenerDistribucionSeveridadUseCase.execute();
         return Response.ok(dto).build();
@@ -125,9 +299,26 @@ public class EfectosSecundariosResource {
     @GET
     @Path("/distribucion-severidad/{idVacuna}")
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Distribución de severidad por vacuna",
             description = "Conteo de efectos por severidad para una vacuna específica")
-    @APIResponse(responseCode = "200", description = "Distribución obtenida correctamente")
+
+    @Parameter(name = "idVacuna", description = "ID de la vacuna", example = "1")
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Distribución obtenida correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "distribucion por vacuna",
+                            value = "{\"leve\":8,\"moderado\":3,\"grave\":2}"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
     public Response getDistribucionSeveridadPorVacuna(
             @PathParam("idVacuna") Integer idVacuna
     ) {
