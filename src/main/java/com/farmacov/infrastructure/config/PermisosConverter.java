@@ -31,13 +31,6 @@ public class PermisosConverter
     public Map<String, Boolean> convertToEntityAttribute(String json) {
         if (json == null || json.isBlank()) return new HashMap<>();
 
-        // H2 en tests puede envolver el JSON con comillas extra — limpiarlas
-        String jsonLimpio = json.trim();
-        if (jsonLimpio.startsWith("\"") && jsonLimpio.endsWith("\"")) {
-            jsonLimpio = jsonLimpio.substring(1, jsonLimpio.length() - 1)
-                    .replace("\\\"", "\"");
-        }
-
         Map<String, Boolean> permisos = new HashMap<>();
         try (JsonReader reader = Json.createReader(new StringReader(json))) {
             JsonObject obj = reader.readObject();
