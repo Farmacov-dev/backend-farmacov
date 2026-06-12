@@ -5,17 +5,20 @@ import com.farmacov.infrastructure.entities.UltimaActividadUsuarioEntity;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UltimaActividadUsuarioMapperTest {
 
+    private static final LocalDateTime FECHA_FIJA =
+            LocalDateTime.of(2026, Month.JANUARY, 15, 10, 0, 0);
+
     // ─── toDomain ───────────────────────────────────────────
 
     @Test
     void toDomain_debeMapearTodosLosCampos() {
-        // Arrange
         UUID usuarioId = UUID.randomUUID();
         UltimaActividadUsuarioEntity entity = new UltimaActividadUsuarioEntity();
         entity.setIdUsuario(usuarioId);
@@ -25,14 +28,11 @@ class UltimaActividadUsuarioMapperTest {
         entity.setQueryString("filtro=true");
         entity.setUserAgent("Mozilla/5.0");
         entity.setIpCliente("192.168.1.1");
-        LocalDateTime ahora = LocalDateTime.now();
-        entity.setCreadoEn(ahora);
-        entity.setActualizadoEn(ahora);
+        entity.setCreadoEn(FECHA_FIJA);
+        entity.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         UltimaActividadUsuario domain = UltimaActividadUsuarioMapper.toDomain(entity);
 
-        // Assert
         assertEquals(usuarioId, domain.getIdUsuario());
         assertEquals("/dashboard/kpis", domain.getEndpoint());
         assertEquals("GET", domain.getMetodoHttp());
@@ -40,8 +40,8 @@ class UltimaActividadUsuarioMapperTest {
         assertEquals("filtro=true", domain.getQueryString());
         assertEquals("Mozilla/5.0", domain.getUserAgent());
         assertEquals("192.168.1.1", domain.getIpCliente());
-        assertEquals(ahora, domain.getCreadoEn());
-        assertEquals(ahora, domain.getActualizadoEn());
+        assertEquals(FECHA_FIJA, domain.getCreadoEn());
+        assertEquals(FECHA_FIJA, domain.getActualizadoEn());
     }
 
     @Test
@@ -51,7 +51,6 @@ class UltimaActividadUsuarioMapperTest {
 
     @Test
     void toDomain_conCamposOpcionalesNull_debeMapearNull() {
-        // queryString, userAgent e ipCliente son nullable
         UltimaActividadUsuarioEntity entity = new UltimaActividadUsuarioEntity();
         entity.setIdUsuario(UUID.randomUUID());
         entity.setEndpoint("/status");
@@ -60,8 +59,8 @@ class UltimaActividadUsuarioMapperTest {
         entity.setQueryString(null);
         entity.setUserAgent(null);
         entity.setIpCliente(null);
-        entity.setCreadoEn(LocalDateTime.now());
-        entity.setActualizadoEn(LocalDateTime.now());
+        entity.setCreadoEn(FECHA_FIJA);
+        entity.setActualizadoEn(FECHA_FIJA);
 
         UltimaActividadUsuario domain = UltimaActividadUsuarioMapper.toDomain(entity);
 
@@ -74,7 +73,6 @@ class UltimaActividadUsuarioMapperTest {
 
     @Test
     void toEntity_debeMapearTodosLosCampos() {
-        // Arrange
         UUID usuarioId = UUID.randomUUID();
         UltimaActividadUsuario domain = new UltimaActividadUsuario();
         domain.setIdUsuario(usuarioId);
@@ -84,14 +82,11 @@ class UltimaActividadUsuarioMapperTest {
         domain.setQueryString("filtro=true");
         domain.setUserAgent("Mozilla/5.0");
         domain.setIpCliente("192.168.1.1");
-        LocalDateTime ahora = LocalDateTime.now();
-        domain.setCreadoEn(ahora);
-        domain.setActualizadoEn(ahora);
+        domain.setCreadoEn(FECHA_FIJA);
+        domain.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         UltimaActividadUsuarioEntity entity = UltimaActividadUsuarioMapper.toEntity(domain);
 
-        // Assert
         assertEquals(usuarioId, entity.getIdUsuario());
         assertEquals("/dashboard/kpis", entity.getEndpoint());
         assertEquals("GET", entity.getMetodoHttp());
@@ -99,8 +94,8 @@ class UltimaActividadUsuarioMapperTest {
         assertEquals("filtro=true", entity.getQueryString());
         assertEquals("Mozilla/5.0", entity.getUserAgent());
         assertEquals("192.168.1.1", entity.getIpCliente());
-        assertEquals(ahora, entity.getCreadoEn());
-        assertEquals(ahora, entity.getActualizadoEn());
+        assertEquals(FECHA_FIJA, entity.getCreadoEn());
+        assertEquals(FECHA_FIJA, entity.getActualizadoEn());
     }
 
     @Test
@@ -118,8 +113,8 @@ class UltimaActividadUsuarioMapperTest {
         domain.setQueryString(null);
         domain.setUserAgent(null);
         domain.setIpCliente(null);
-        domain.setCreadoEn(LocalDateTime.now());
-        domain.setActualizadoEn(LocalDateTime.now());
+        domain.setCreadoEn(FECHA_FIJA);
+        domain.setActualizadoEn(FECHA_FIJA);
 
         UltimaActividadUsuarioEntity entity = UltimaActividadUsuarioMapper.toEntity(domain);
 

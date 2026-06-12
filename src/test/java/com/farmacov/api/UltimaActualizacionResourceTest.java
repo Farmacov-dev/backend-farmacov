@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Month;
 import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
@@ -14,6 +15,9 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 class UltimaActualizacionResourceTest {
+
+    private static final LocalDate FECHA_FIJA_DATE =
+            LocalDate.of(2026, Month.MARCH, 15);
 
     @Inject
     EntityManager em;
@@ -37,14 +41,14 @@ class UltimaActualizacionResourceTest {
 
         em.createNativeQuery(
                 "INSERT INTO reportes_adversos (id, id_vacuna, sexo, grupo_edad, es_grave, fecha_reporte, creado_en) " +
-                        "VALUES (1, 1, 'M', '18-29', false, '" + LocalDate.now() + "', '2026-03-15T10:00:00')"
+                        "VALUES (1, 1, 'M', '18-29', false, '" + FECHA_FIJA_DATE + "', '2026-03-15T10:00:00')"
         ).executeUpdate();
     }
 
     @Test
     void getUltimaActualizacion_debeRetornar200() {
         given()
-                .header("Authorization", "Bearer test-token" )
+                .header("Authorization", "Bearer test-token")
                 .when().get("/dashboard/ultima-actualizacion")
                 .then()
                 .statusCode(200);
@@ -63,8 +67,6 @@ class UltimaActualizacionResourceTest {
     @Test
     @Transactional
     void getUltimaActualizacion_sinDatos_debeRetornar200ConFechaActual() {
-        // Limpiar todo — el UseCase retorna LocalDateTime.now() si no hay datos
-        // así que siempre hay una fecha válida
         em.createNativeQuery("DELETE FROM reportes_adversos").executeUpdate();
         em.flush();
 

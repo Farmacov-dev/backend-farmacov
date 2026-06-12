@@ -8,16 +8,21 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ReporteAdversoMapperTest {
 
+    private static final LocalDate FECHA_FIJA_DATE =
+            LocalDate.of(2026, Month.JANUARY, 15);
+    private static final LocalDateTime FECHA_FIJA =
+            LocalDateTime.of(2026, Month.JANUARY, 15, 10, 0, 0);
+
     // ─── toDomain ───────────────────────────────────────────
 
     @Test
     void toDomain_debeMapearTodosLosCampos() {
-        // Arrange
         VacunaEntity vacuna = new VacunaEntity();
         vacuna.setId(1);
 
@@ -31,21 +36,19 @@ class ReporteAdversoMapperTest {
         entity.setSexo("F");
         entity.setGrupoEdad("18-29");
         entity.setEsGrave(true);
-        entity.setFechaReporte(LocalDate.of(2026, 1, 15));
-        entity.setCreadoEn(LocalDateTime.of(2026, 1, 15, 10, 0));
+        entity.setFechaReporte(FECHA_FIJA_DATE);
+        entity.setCreadoEn(FECHA_FIJA);
 
-        // Act
         ReporteAdverso modelo = ReporteAdversoMapper.toDomain(entity);
 
-        // Assert
         assertEquals(100L, modelo.getId());
         assertEquals(1, modelo.getIdVacuna());
         assertEquals(2, modelo.getIdSintoma());
         assertEquals(ReporteAdverso.Sexo.F, modelo.getSexo());
         assertEquals(ReporteAdverso.GrupoEdad._18_29, modelo.getGrupoEdad());
         assertTrue(modelo.getEsGrave());
-        assertEquals(LocalDate.of(2026, 1, 15), modelo.getFechaReporte());
-        assertEquals(LocalDateTime.of(2026, 1, 15, 10, 0), modelo.getCreadoEn());
+        assertEquals(FECHA_FIJA_DATE, modelo.getFechaReporte());
+        assertEquals(FECHA_FIJA, modelo.getCreadoEn());
     }
 
     @Test
@@ -57,7 +60,7 @@ class ReporteAdversoMapperTest {
         entity.setSexo("M");
         entity.setGrupoEdad("65+");
         entity.setEsGrave(false);
-        entity.setFechaReporte(LocalDate.now());
+        entity.setFechaReporte(FECHA_FIJA_DATE);
 
         ReporteAdverso modelo = ReporteAdversoMapper.toDomain(entity);
 
@@ -73,11 +76,11 @@ class ReporteAdversoMapperTest {
         ReporteAdversoEntity entity = new ReporteAdversoEntity();
         entity.setId(1L);
         entity.setVacuna(vacuna);
-        entity.setSintomaGrave(null); // ← sintoma es opcional
+        entity.setSintomaGrave(null);
         entity.setSexo("U");
         entity.setGrupoEdad("DESCONOCIDO");
         entity.setEsGrave(false);
-        entity.setFechaReporte(LocalDate.now());
+        entity.setFechaReporte(FECHA_FIJA_DATE);
 
         ReporteAdverso modelo = ReporteAdversoMapper.toDomain(entity);
 
@@ -93,7 +96,7 @@ class ReporteAdversoMapperTest {
             entity.setSexo(sexo);
             entity.setGrupoEdad("18-29");
             entity.setEsGrave(false);
-            entity.setFechaReporte(LocalDate.now());
+            entity.setFechaReporte(FECHA_FIJA_DATE);
 
             ReporteAdverso modelo = ReporteAdversoMapper.toDomain(entity);
 
@@ -127,7 +130,7 @@ class ReporteAdversoMapperTest {
             entity.setSexo("M");
             entity.setGrupoEdad(casos[i][0]);
             entity.setEsGrave(false);
-            entity.setFechaReporte(LocalDate.now());
+            entity.setFechaReporte(FECHA_FIJA_DATE);
 
             ReporteAdverso modelo = ReporteAdversoMapper.toDomain(entity);
 
@@ -142,7 +145,7 @@ class ReporteAdversoMapperTest {
         entity.setSexo("M");
         entity.setGrupoEdad("invalido");
         entity.setEsGrave(false);
-        entity.setFechaReporte(LocalDate.now());
+        entity.setFechaReporte(FECHA_FIJA_DATE);
 
         assertThrows(IllegalArgumentException.class,
                 () -> ReporteAdversoMapper.toDomain(entity));
@@ -152,7 +155,6 @@ class ReporteAdversoMapperTest {
 
     @Test
     void toEntity_debeMapearCamposBasicos_sinRelaciones() {
-        // Arrange
         ReporteAdverso modelo = new ReporteAdverso();
         modelo.setId(100L);
         modelo.setIdVacuna(1);
@@ -160,20 +162,17 @@ class ReporteAdversoMapperTest {
         modelo.setSexo(ReporteAdverso.Sexo.F);
         modelo.setGrupoEdad(ReporteAdverso.GrupoEdad._18_29);
         modelo.setEsGrave(true);
-        modelo.setFechaReporte(LocalDate.of(2026, 1, 15));
-        modelo.setCreadoEn(LocalDateTime.of(2026, 1, 15, 10, 0));
+        modelo.setFechaReporte(FECHA_FIJA_DATE);
+        modelo.setCreadoEn(FECHA_FIJA);
 
-        // Act
         ReporteAdversoEntity entity = ReporteAdversoMapper.toEntity(modelo);
 
-        // Assert
         assertEquals(100L, entity.getId());
         assertEquals("F", entity.getSexo());
         assertEquals("18-29", entity.getGrupoEdad());
         assertTrue(entity.getEsGrave());
-        assertEquals(LocalDate.of(2026, 1, 15), entity.getFechaReporte());
-        assertEquals(LocalDateTime.of(2026, 1, 15, 10, 0), entity.getCreadoEn());
-        // vacuna y sintoma no se setean en el mapper — responsabilidad del RepositoryImpl
+        assertEquals(FECHA_FIJA_DATE, entity.getFechaReporte());
+        assertEquals(FECHA_FIJA, entity.getCreadoEn());
         assertNull(entity.getVacuna());
         assertNull(entity.getSintomaGrave());
     }
@@ -185,11 +184,10 @@ class ReporteAdversoMapperTest {
         modelo.setSexo(ReporteAdverso.Sexo.M);
         modelo.setGrupoEdad(ReporteAdverso.GrupoEdad._65_MAS);
         modelo.setEsGrave(false);
-        modelo.setFechaReporte(LocalDate.now());
+        modelo.setFechaReporte(FECHA_FIJA_DATE);
 
         ReporteAdversoEntity entity = ReporteAdversoMapper.toEntity(modelo);
 
-        // _65_MAS.getValue() debe retornar "65+" para MySQL
         assertEquals("65+", entity.getGrupoEdad());
     }
 
@@ -200,7 +198,7 @@ class ReporteAdversoMapperTest {
         modelo.setSexo(ReporteAdverso.Sexo.U);
         modelo.setGrupoEdad(ReporteAdverso.GrupoEdad.DESCONOCIDO);
         modelo.setEsGrave(false);
-        modelo.setFechaReporte(LocalDate.now());
+        modelo.setFechaReporte(FECHA_FIJA_DATE);
 
         ReporteAdversoEntity entity = ReporteAdversoMapper.toEntity(modelo);
 

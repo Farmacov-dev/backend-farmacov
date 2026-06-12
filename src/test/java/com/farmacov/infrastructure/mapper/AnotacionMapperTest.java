@@ -6,17 +6,20 @@ import com.farmacov.infrastructure.entities.UsuariosEntity;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AnotacionMapperTest {
 
+    private static final LocalDateTime FECHA_FIJA =
+            LocalDateTime.of(2026, Month.JANUARY, 15, 10, 0, 0);
+
     // ─── toDomain ───────────────────────────────────────────
 
     @Test
     void toDomain_debeMapearTodosLosCampos() {
-        // Arrange
         UUID usuarioId = UUID.randomUUID();
         UsuariosEntity usuario = new UsuariosEntity();
         usuario.setId(usuarioId);
@@ -27,56 +30,47 @@ class AnotacionMapperTest {
         entity.setDashboardReferencia("dashboard-kpis");
         entity.setTitulo("Nota importante");
         entity.setObservaciones("Revisar datos del mes");
-        LocalDateTime ahora = LocalDateTime.now();
-        entity.setCreadoEn(ahora);
-        entity.setActualizadoEn(ahora);
+        entity.setCreadoEn(FECHA_FIJA);
+        entity.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         Anotacion modelo = AnotacionMapper.toDomain(entity);
 
-        // Assert
         assertEquals(1, modelo.getId());
         assertEquals(usuarioId, modelo.getIdUsuario());
         assertEquals("dashboard-kpis", modelo.getDashboardReferencia());
         assertEquals("Nota importante", modelo.getTitulo());
         assertEquals("Revisar datos del mes", modelo.getObservaciones());
-        assertEquals(ahora, modelo.getCreadoEn());
-        assertEquals(ahora, modelo.getActualizadoEn());
+        assertEquals(FECHA_FIJA, modelo.getCreadoEn());
+        assertEquals(FECHA_FIJA, modelo.getActualizadoEn());
     }
 
     @Test
     void toDomain_conUsuarioNull_debeMapearIdUsuarioNull() {
-        // Arrange
         AnotacionEntity entity = new AnotacionEntity();
         entity.setId(1);
-        entity.setUsuario(null); // ← null check en el mapper
+        entity.setUsuario(null);
         entity.setTitulo("Nota");
-        entity.setCreadoEn(LocalDateTime.now());
-        entity.setActualizadoEn(LocalDateTime.now());
+        entity.setCreadoEn(FECHA_FIJA);
+        entity.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         Anotacion modelo = AnotacionMapper.toDomain(entity);
 
-        // Assert
         assertNull(modelo.getIdUsuario());
     }
 
     @Test
     void toDomain_conCamposOpcionalesNull_debeMapearNull() {
-        // dashboardReferencia y observaciones son nullable
         AnotacionEntity entity = new AnotacionEntity();
         entity.setId(1);
         entity.setUsuario(null);
         entity.setDashboardReferencia(null);
         entity.setTitulo("Nota");
         entity.setObservaciones(null);
-        entity.setCreadoEn(LocalDateTime.now());
-        entity.setActualizadoEn(LocalDateTime.now());
+        entity.setCreadoEn(FECHA_FIJA);
+        entity.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         Anotacion modelo = AnotacionMapper.toDomain(entity);
 
-        // Assert
         assertNull(modelo.getDashboardReferencia());
         assertNull(modelo.getObservaciones());
     }
@@ -85,46 +79,38 @@ class AnotacionMapperTest {
 
     @Test
     void toEntity_debeMapearCamposBasicos_sinUsuario() {
-        // Arrange
         Anotacion modelo = new Anotacion();
         modelo.setId(1);
         modelo.setIdUsuario(UUID.randomUUID());
         modelo.setDashboardReferencia("dashboard-kpis");
         modelo.setTitulo("Nota importante");
         modelo.setObservaciones("Revisar datos del mes");
-        LocalDateTime ahora = LocalDateTime.now();
-        modelo.setCreadoEn(ahora);
-        modelo.setActualizadoEn(ahora);
+        modelo.setCreadoEn(FECHA_FIJA);
+        modelo.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         AnotacionEntity entity = AnotacionMapper.toEntity(modelo);
 
-        // Assert
         assertEquals(1, entity.getId());
         assertEquals("dashboard-kpis", entity.getDashboardReferencia());
         assertEquals("Nota importante", entity.getTitulo());
         assertEquals("Revisar datos del mes", entity.getObservaciones());
-        assertEquals(ahora, entity.getCreadoEn());
-        assertEquals(ahora, entity.getActualizadoEn());
-        // usuario no se setea en el mapper — responsabilidad del RepositoryImpl
+        assertEquals(FECHA_FIJA, entity.getCreadoEn());
+        assertEquals(FECHA_FIJA, entity.getActualizadoEn());
         assertNull(entity.getUsuario());
     }
 
     @Test
     void toEntity_conCamposOpcionalesNull_debeMapearNull() {
-        // Arrange
         Anotacion modelo = new Anotacion();
         modelo.setId(1);
         modelo.setDashboardReferencia(null);
         modelo.setTitulo("Nota");
         modelo.setObservaciones(null);
-        modelo.setCreadoEn(LocalDateTime.now());
-        modelo.setActualizadoEn(LocalDateTime.now());
+        modelo.setCreadoEn(FECHA_FIJA);
+        modelo.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         AnotacionEntity entity = AnotacionMapper.toEntity(modelo);
 
-        // Assert
         assertNull(entity.getDashboardReferencia());
         assertNull(entity.getObservaciones());
         assertNull(entity.getUsuario());

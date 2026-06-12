@@ -11,23 +11,24 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class VacunaMapperTest {
 
+    private static final LocalDateTime FECHA_FIJA =
+            LocalDateTime.of(2026, Month.JANUARY, 15, 10, 0, 0);
+
     // ─── toDomain ───────────────────────────────────────────
 
     @Test
     void toDomain_debeMapearCamposPropiosDeVacuna() {
-        // Arrange
         VacunaEntity entity = buildEntityBase();
 
-        // Act
         Vacuna modelo = VacunaMapper.toDomain(entity);
 
-        // Assert
         assertEquals(1, modelo.getIdVacuna());
         assertEquals("Pfizer", modelo.getNombre());
         assertEquals("Pfizer Inc.", modelo.getFarmaceutica());
@@ -39,7 +40,6 @@ class VacunaMapperTest {
 
     @Test
     void toDomain_conFarmaco_debeMapearIdYNombreFarmaco() {
-        // Arrange
         FarmacoEntity farmaco = new FarmacoEntity();
         farmaco.setId(10);
         farmaco.setNombre("tozinameran");
@@ -47,10 +47,8 @@ class VacunaMapperTest {
         VacunaEntity entity = buildEntityBase();
         entity.setFarmaco(farmaco);
 
-        // Act
         Vacuna modelo = VacunaMapper.toDomain(entity);
 
-        // Assert
         assertEquals(10, modelo.getIdFarmaco());
         assertEquals("tozinameran", modelo.getNombreFarmaco());
     }
@@ -68,7 +66,6 @@ class VacunaMapperTest {
 
     @Test
     void toDomain_conUnaCondicion_debeMapearTemperaturaYTiempoAmbiente() {
-        // Arrange
         VacunaCondicionEntity condicion = new VacunaCondicionEntity();
         condicion.setId(1);
         condicion.setTemperatura(new BigDecimal("2.0"));
@@ -77,17 +74,14 @@ class VacunaMapperTest {
         VacunaEntity entity = buildEntityBase();
         entity.setCondiciones(List.of(condicion));
 
-        // Act
         Vacuna modelo = VacunaMapper.toDomain(entity);
 
-        // Assert
         assertEquals(new BigDecimal("2.0"), modelo.getTemperatura());
         assertEquals(new BigDecimal("4.0"), modelo.getTiempoAmbiente());
     }
 
     @Test
     void toDomain_conUnCosto_debeMapearCostoUnitario() {
-        // Arrange
         VacunaCostoEntity costo = new VacunaCostoEntity();
         costo.setId(1);
         costo.setCostoUnitario(new BigDecimal("250.00"));
@@ -95,16 +89,13 @@ class VacunaMapperTest {
         VacunaEntity entity = buildEntityBase();
         entity.setCostos(List.of(costo));
 
-        // Act
         Vacuna modelo = VacunaMapper.toDomain(entity);
 
-        // Assert
         assertEquals(new BigDecimal("250.00"), modelo.getCostoUnitario());
     }
 
     @Test
     void toDomain_conVariasCondiciones_debeTomarSoloPrimera() {
-        // El mapper usa get(0) — solo toma la primera condición
         VacunaCondicionEntity condicion1 = new VacunaCondicionEntity();
         condicion1.setId(1);
         condicion1.setTemperatura(new BigDecimal("-70.0"));
@@ -123,7 +114,6 @@ class VacunaMapperTest {
 
     @Test
     void toDomain_conMultiplesEfectos_debeMapearListaCompleta() {
-        // A diferencia de condiciones y costos, efectos se mapean todos
         EfectoSecundarioEntity efecto1 = buildEfecto(1, "Dolor en brazo",
                 EfectoSecundarioEntity.Severidad.leve);
         EfectoSecundarioEntity efecto2 = buildEfecto(2, "Fiebre",
@@ -184,29 +174,24 @@ class VacunaMapperTest {
 
     @Test
     void toEntity_debeMapearSoloCamposPropiosDeVacuna() {
-        // Arrange
         Vacuna modelo = new Vacuna();
         modelo.setIdVacuna(1);
         modelo.setNombre("Pfizer");
         modelo.setFarmaceutica("Pfizer Inc.");
         modelo.setTipo("ARNm");
         modelo.setDescripcionGeneral("Vacuna contra COVID-19");
-        LocalDateTime ahora = LocalDateTime.now();
-        modelo.setCreadoEn(ahora);
-        modelo.setActualizadoEn(ahora);
+        modelo.setCreadoEn(FECHA_FIJA);
+        modelo.setActualizadoEn(FECHA_FIJA);
 
-        // Act
         VacunaEntity entity = VacunaMapper.toEntity(modelo);
 
-        // Assert
         assertEquals(1, entity.getId());
         assertEquals("Pfizer", entity.getNombre());
         assertEquals("Pfizer Inc.", entity.getFarmaceutica());
         assertEquals("ARNm", entity.getTipo());
         assertEquals("Vacuna contra COVID-19", entity.getDescripcionGeneral());
-        assertEquals(ahora, entity.getCreadoEn());
-        assertEquals(ahora, entity.getActualizadoEn());
-        // subtablas y farmaco no se tocan en toEntity
+        assertEquals(FECHA_FIJA, entity.getCreadoEn());
+        assertEquals(FECHA_FIJA, entity.getActualizadoEn());
         assertNull(entity.getCondiciones());
         assertNull(entity.getCostos());
         assertNull(entity.getEfectosSecundarios());
@@ -227,8 +212,8 @@ class VacunaMapperTest {
         entity.setFarmaceutica("Pfizer Inc.");
         entity.setTipo("ARNm");
         entity.setDescripcionGeneral("Vacuna contra COVID-19");
-        entity.setCreadoEn(LocalDateTime.now());
-        entity.setActualizadoEn(LocalDateTime.now());
+        entity.setCreadoEn(FECHA_FIJA);
+        entity.setActualizadoEn(FECHA_FIJA);
         entity.setCondiciones(List.of());
         entity.setCostos(List.of());
         entity.setEfectosSecundarios(List.of());
