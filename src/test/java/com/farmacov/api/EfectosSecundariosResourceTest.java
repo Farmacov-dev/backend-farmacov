@@ -172,11 +172,6 @@ class EfectosSecundariosResourceTest {
                 .statusCode(404);
     }
 
-    // TODO: eliminar_debeRetornar204 y eliminar_conReportesAsociados_debeRetornar400
-    // omitidos — EfectoSecundarioUseCase.eliminar usa countByIdSintoma que tiene
-    // el mismo bug que SintomaGraveUseCase: count("idSintoma") debería ser
-    // count("sintomaGrave.id") — retorna 500 hasta que se corrija.
-
     // ─── GET /admin/efectos-secundarios/distribucion-severidad ───────────────
 
     @Test
