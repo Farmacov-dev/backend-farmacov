@@ -2,7 +2,6 @@ package com.farmacov.api;
 
 import com.farmacov.application.dto.UltimaActualizacionDto;
 import com.farmacov.application.usecase.ObtenerUltimaActualizacionUseCase;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

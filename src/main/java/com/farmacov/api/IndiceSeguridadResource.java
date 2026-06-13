@@ -29,9 +29,14 @@ public class IndiceSeguridadResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+
+
     @Operation(
-            summary = "indice de seguridad de todas las vacunas",
-            description = "regresa el indice de seguridad calculado para cada vacuna" + "se obtiene dividiendo reportes graves entre total de reportes con un stored procedure en la base de datos"
+            summary = "Índice de seguridad de todas las vacunas",
+            description = "Devuelve el índice de seguridad calculado para cada vacuna. " +
+                    "Se obtiene desde la VIEW vista_indice_seguridad — " +
+                    "fórmula: 100 * (1 - (reportesGraves / totalReportes)). " +
+                    "Vacunas sin reportes devuelven indiceSeguridad null"
     )
 
     @APIResponse(
@@ -62,9 +67,13 @@ public class IndiceSeguridadResource {
     @Produces(MediaType.APPLICATION_JSON)
 
     @Operation(
-            summary = "indice de seguridad por vacuna",
-            description = "regresa el indice de seguridad de una vacuna especifica"
+            summary = "Índice de seguridad por vacuna",
+            description = "Devuelve el índice de seguridad de una vacuna específica. " +
+                    "Se calcula con el stored procedure sp_indice_seguridad — " +
+                    "fórmula: 100 * (1 - (reportesGraves / totalReportes)). " +
+                    "Si la vacuna no tiene reportes, indiceSeguridad es null"
     )
+
     @Parameter(
             name = "idVacuna",
             description = "id de la vacuna a consultar",
@@ -87,7 +96,17 @@ public class IndiceSeguridadResource {
 
     @APIResponse(responseCode = "401", description = "No autorizado")
 
-    @APIResponse(responseCode = "404", description = "Vacuna no encontrada")
+    @APIResponse(
+            responseCode = "404",
+            description = "Vacuna no encontrada",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrada",
+                            value = "{\"error\": \"Vacuna con id 99 no encontrada\"}"
+                    )
+            )
+    )
 
     public Response getPorVacuna(@PathParam("idVacuna") Integer idVacuna) {
         IndiceSeguridadDto indice = obtenerIndiceVacunaUseCase.execute(idVacuna);

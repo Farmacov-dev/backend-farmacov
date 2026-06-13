@@ -48,6 +48,38 @@ public class AuthResource {
     @POST
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
+
+    @Operation(
+            summary = "Login de usuario",
+            description = "Recibe el JWT del proveedor de autenticación en el header Authorization, lo verifica y devuelve los datos del usuario desde MySQL incluyendo rol y permisos"
+    )
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Login exitoso — devuelve datos del usuario",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "usuario autenticado",
+                            value = "{\"email\":\"atorres@farmacov.com\",\"nombre\":\"Andres\",\"apellidoPaterno\":\"Torres\",\"apellidoMaterno\":\"\",\"departamento\":\"Dirección General\",\"rol\":\"Director de Análisis \",\"esAdmin\":true,\"permisos\":{\"dashboard\":true,\"catalogo\":true,\"analisis\":true}}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "401",
+            description = "Token inválido, expirado o usuario inhabilitado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "sin token",
+                            value = "{\"error\": \"Token requerido\"}"
+                    )
+            )
+    )
+
+
+
     public Response login(@Context HttpHeaders headers) {
         String authHeader = headers.getHeaderString("Authorization");
 
@@ -68,6 +100,38 @@ public class AuthResource {
     @GET
     @Path("/me")
     @Produces(MediaType.APPLICATION_JSON)
+
+    @Operation(
+            summary = "Obtener usuario autenticado",
+            description = "Devuelve los datos del usuario actualmente autenticado — útil para restaurar la sesión cuando el usuario recarga la página sin necesidad de volver a hacer login"
+    )
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Datos del usuario obtenidos correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "usuario actual",
+                            value = "{\"email\":\"atorres@farmacov.com\",\"nombre\":\"Andres\",\"apellidoPaterno\":\"Torres\",\"apellidoMaterno\":\"\",\"departamento\":\"Dirección General\",\"rol\":\"Director de Análisis \",\"esAdmin\":true,\"permisos\":{\"dashboard\":true,\"catalogo\":true,\"analisis\":true}}"
+                    )
+            )
+    )
+
+    @APIResponse(responseCode = "401", description = "No autorizado — token inválido o expirado")
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Usuario no encontrado en el sistema",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrado",
+                            value = "{\"error\": \"Usuario no encontrado en el sistema\"}"
+                    )
+            )
+    )
+
     public Response me(@Context ContainerRequestContext ctx) {
         String firebaseUid = (String) ctx.getProperty("firebase_uid");
         UsuarioResponseDto usuario = loginUseCase.executeFromUid(firebaseUid);
@@ -79,6 +143,73 @@ public class AuthResource {
     @Path("/registro")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+
+    @Operation(
+            summary = "Registrar nuevo usuario",
+            description = "Crea un nuevo usuario en el proveedor de autenticación y en MySQL. Solo puede ser ejecutado por un usuario con token válido,  el id del admin se obtiene desde el token"
+    )
+
+    @RequestBody(
+            description = "Datos del nuevo usuario a registrar",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "registro",
+                            value = "{\"nombre\":\"Ana\",\"apellidoPaterno\":\"Martinez\",\"apellidoMaterno\":\"Lopez\",\"correo\":\"amartinez@farmacov.com\",\"password\":\"Secret!23*&\",\"departamento\":\"Análisis\",\"idRol\":1}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "201",
+            description = "Usuario registrado correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "usuario creado",
+                            value = "{\"email\":\"amartinez@farmacov.com\",\"nombre\":\"Ana\",\"apellidoPaterno\":\"Martinez\",\"apellidoMaterno\":\"Lopez\",\"departamento\":\"Análisis\",\"rol\":\"Director de Análisis Farmacéutico\",\"esAdmin\":false,\"permisos\":{\"dashboard\":true,\"catalogo\":true,\"analisis\":true}}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "400",
+            description = "Datos inválidos — campos requeridos faltantes o formato incorrecto",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "error validacion",
+                            value = "{\"error\": \"El correo no tiene formato válido\"}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "401",
+            description = "Token requerido para registrar usuarios",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "sin token",
+                            value = "{\"error\": \"Token requerido para registrar usuarios\"}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "409",
+            description = "El correo ya está registrado en el proveedor de autenticación",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "email duplicado",
+                            value = "{\"error\": \"El correo ya está registrado\"}"
+                    )
+            )
+    )
+
+
+
     public Response registro(@Context HttpHeaders headers, @Valid RegistroDto dto) {
         UUID idAdmin = resolverAdminDesdeToken(headers);
         if (idAdmin == null) {

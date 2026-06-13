@@ -30,9 +30,12 @@ public class KpisDashboardResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
 
-    @Operation (
+    @Operation(
             summary = "KPIs del dashboard",
-            description = "regresan indicadores claves del sistema para el componente de cards"
+            description = "Devuelve los indicadores clave del sistema para el componente de cards del dashboard. " +
+                    "Todos los valores se calculan con COUNT(*) directamente en la BD — sin traer objetos a memoria. " +
+                    "reportesEsteMes filtra por mes y año actuales. " +
+                    "porcentajeReportesGraves = (totalReportesGraves / totalReportes) * 100, redondeado a 1 decimal"
     )
 
     @APIResponse(

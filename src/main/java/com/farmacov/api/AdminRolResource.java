@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -26,12 +27,24 @@ public class AdminRolResource {
     @Inject
     RolesRepository rolesRepository;
 
-    // GET /admin/roles
+    // GET /admin/roles - listar todos los roles
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Listar todos los roles",
             description = "Regresa los roles con los permisos para ver cada pagina")
-    @APIResponse(responseCode = "200", description = "Lista de roles obtenida correctamente")
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Lista de roles obtenida correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "lista de roles",
+                            value = "[{\"id\":1,\"nombre\":\"Director de Análisis \",\"esAdmin\":true,\"permisos\":{\"dashboard\":true,\"catalogo\":true,\"analisis\":true}},{\"id\":2,\"nombre\":\"Finanzas\",\"esAdmin\":false,\"permisos\":{\"dashboard\":true,\"catalogo\":false,\"analisis\":false}}]"
+                    )
+            )
+    )
+
     @APIResponse(responseCode = "401", description = "No autorizado")
     public Response getRoles() {
         List<Roles> roles = rolesRepository.findAllRoles();
@@ -44,15 +57,38 @@ public class AdminRolResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Crear un rol nuevo",
             description = "Crea un rol con nombre, esAdmin y permisos iniciales")
-    @APIResponse(responseCode = "201", description = "Rol creado correctamente")
-    @APIResponse(responseCode = "400", description = "Datos inválidos")
+
+    @APIResponse(
+            responseCode = "201",
+            description = "Rol creado correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "rol creado",
+                            value = "{\"id\":3,\"nombre\":\"Analista\",\"esAdmin\":false,\"permisos\":{\"dashboard\":false,\"catalogo\":false,\"analisis\":false}}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "400",
+            description = "Datos inválidos — nombre o esAdmin faltantes",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "error validacion",
+                            value = "{\"error\": \"El nombre del rol es obligatorio\"}"
+                    )
+            )
+    )
+
     @APIResponse(responseCode = "401", description = "No autorizado")
     public Response crearRol(@Valid CrearRolDto dto) {
         Roles nuevo = new Roles();
         nuevo.setNombre(dto.getNombre());
         nuevo.setEsAdmin(dto.getEsAdmin());
 
-        // Si no mandan permisos, inicializamos todos en false
+        // Si no se mandan permisos, inicializamos todos en false
         Map<String, Boolean> permisos = dto.getPermisos() != null
                 ? dto.getPermisos()
                 : new HashMap<>(Map.of(
@@ -73,9 +109,37 @@ public class AdminRolResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Editar un rol",
             description = "Actualiza nombre y esAdmin de un rol existente")
-    @APIResponse(responseCode = "200", description = "Rol actualizado correctamente")
-    @APIResponse(responseCode = "404", description = "Rol no encontrado")
+
+    @Parameter(name = "idRol", description = "ID del rol a editar", example = "1")
+
+
+    @APIResponse(
+            responseCode = "200",
+            description = "Rol actualizado correctamente",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "rol actualizado",
+                            value = "{\"id\":1,\"nombre\":\"Director Actualizado\",\"esAdmin\":true,\"permisos\":{\"dashboard\":true,\"catalogo\":true,\"analisis\":true}}"
+                    )
+            )
+    )
+
     @APIResponse(responseCode = "401", description = "No autorizado")
+
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Rol no encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrado",
+                            value = "{\"error\": \"Rol con id 99 no encontrado\"}"
+                    )
+            )
+    )
+
     public Response editarRol(
             @PathParam("idRol") Integer idRol,
             @Valid CrearRolDto dto
@@ -109,7 +173,19 @@ public class AdminRolResource {
                     examples = @ExampleObject(name = "rol actualizado",
                             value = "{\"id\":1,\"nombre\":\"Director\",\"esAdmin\":true,\"permisos\":{\"dashboard\":true,\"catalogo\":true,\"analisis\":false}}")))
     @APIResponse(responseCode = "401", description = "No autorizado")
-    @APIResponse(responseCode = "404", description = "Rol no encontrado")
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Rol no encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrado",
+                            value = "{\"error\": \"Rol con id 99 no encontrado\"}"
+                    )
+            )
+    )
+
     @Transactional
     public Response updatePermisos(
             @PathParam("idRol") Integer idRol,
@@ -129,12 +205,40 @@ public class AdminRolResource {
     @DELETE
     @Path("/{idRol}")
     @Produces(MediaType.APPLICATION_JSON)
+
     @Operation(summary = "Eliminar un rol",
             description = "Elimina un rol — falla si tiene usuarios asignados")
+
+    @Parameter(name = "idRol", description = "ID del rol a eliminar", example = "1")
+
     @APIResponse(responseCode = "204", description = "Rol eliminado correctamente")
-    @APIResponse(responseCode = "400", description = "El rol tiene usuarios asignados")
-    @APIResponse(responseCode = "404", description = "Rol no encontrado")
+
+    @APIResponse(
+            responseCode = "400",
+            description = "No se puede eliminar — el rol tiene usuarios asignados",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "error fk",
+                            value = "{\"error\": \"No se puede eliminar el rol — tiene 3 usuario(s) asignado(s)\"}"
+                    )
+            )
+    )
+
+    @APIResponse(
+            responseCode = "404",
+            description = "Rol no encontrado",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    examples = @ExampleObject(
+                            name = "no encontrado",
+                            value = "{\"error\": \"Rol con id 99 no encontrado\"}"
+                    )
+            )
+    )
+
     @APIResponse(responseCode = "401", description = "No autorizado")
+
     public Response eliminarRol(@PathParam("idRol") Integer idRol) {
         rolesRepository.findRoleById(idRol)
                 .orElseThrow(() -> new NotFoundException(
